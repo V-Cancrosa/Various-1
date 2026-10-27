@@ -1,0 +1,57 @@
+name: Release Map & Scene Browser
+
+# When main gets map-scene-browser/module.json with a new version (e.g. "1.1.0") and there is no
+# map-scene-browser-v1.1.0 release yet: packs the module and creates that release with module.zip and module.json.
+# Foundry reads the manifest from main (the "manifest" link), so "download" in module.json has to name the same tag.
+on:
+  push:
+    branches: [main]
+    paths: ["map-scene-browser/**", ".github/workflows/map-scene-browser.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: map-scene-browser
+    env:
+      REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the version and whether it has a release
+        id: check
+        run: |
+          VERSION="$(jq -r .version module.json)"
+          TAG="map-scene-browser-v$VERSION"
+          DOWNLOAD="https://github.com/$REPO/releases/download/$TAG/module.zip"
+          ACTUAL="$(jq -r .download module.json)"
+          if [ "${ACTUAL,,}" != "${DOWNLOAD,,}" ]; then
+            echo "::error file=map-scene-browser/module.json::\"download\" must be $DOWNLOAD (version $VERSION)"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if gh release view "$TAG" -R "$REPO" >/dev/null 2>&1; then
+            echo "Release $TAG already exists, skipping."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Pack the module
+        if: steps.check.outputs.exists != 'true'
+        run: zip -r module.zip module.json README.md scripts styles
+
+      - name: Create the release
+        if: steps.check.outputs.exists != 'true'
+        env:
+          TAG: ${{ steps.check.outputs.tag }}
+          VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          gh release create "$TAG" module.json module.zip -R "$REPO" \
+            --target "$GITHUB_SHA" --title "Map & Scene Browser v$VERSION" \
+            --notes "Install in Foundry VTT (Setup → Add-on Modules → Install Module) with the manifest URL: https://raw.githubusercontent.com/$REPO/main/map-scene-browser/module.json"

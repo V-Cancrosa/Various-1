@@ -1,0 +1,13 @@
+{
+  "id": "map-scene-browser",
+  "title": "Map & Scene Browser",
+  "description": "A GM window that lists map and scene modules from a remote CSV file (source, name, json_link, zip_link, version), with search, a type filter, and Install / Uninstall buttons.",
+  "version": "1.0.0",
+  "authors": [{ "name": "V_Cancrosa" }],
+  "compatibility": { "minimum": "14", "verified": "14" },
+  "esmodules": ["scripts/browser.js"],
+  "styles": ["styles/browser.css"],
+  "url": "https://github.com/V-Cancrosa/Various-1/tree/main/map-scene-browser",
+  "manifest": "https://raw.githubusercontent.com/V-Cancrosa/Various-1/main/map-scene-browser/module.json",
+  "download": "https://github.com/V-Cancrosa/Various-1/releases/download/map-scene-browser-v1.0.0/module.zip"
+}
