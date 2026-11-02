@@ -1,0 +1,491 @@
+<!-- Warhammer Fantasy Roleplay 2. edycja — karta postaci Roll20 (PL). Klasy z prefiksem sheet-, logika w sheet workerze na dole. -->
+<div class="sheet-root">
+  <input type="hidden" name="attr_zakladka" value="cechy" class="sheet-tabstate">
+  <input type="hidden" name="attr_wersja" value="0">
+
+  <header class="sheet-naglowek">
+    <div class="sheet-tozsamosc">
+      <label class="sheet-field sheet-f-imie"><span class="sheet-lbl">Imię</span><input type="text" name="attr_character_name" placeholder="Imię bohatera" class="sheet-imie"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Rasa</span><select name="attr_rasa"><option value="Człowiek" selected>Człowiek</option><option value="Elf">Elf</option><option value="Krasnolud">Krasnolud</option><option value="Niziołek">Niziołek</option></select></label>
+      <label class="sheet-field"><span class="sheet-lbl">Obecna profesja</span><input type="text" name="attr_profesja" placeholder="np. Najemnik"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Poprzednie profesje</span><input type="text" name="attr_profesje_poprz" placeholder="np. Szczurołap"></label>
+    </div>
+    <div class="sheet-liczniki">
+      <div class="sheet-licznik"><span class="sheet-lbl">Żywotność</span><div class="sheet-ulamek"><input type="number" name="attr_zyw_akt" value="0" class="sheet-duzy"><span>/</span><input type="number" name="attr_zyw" value="0" class="sheet-calc sheet-maks" readonly tabindex="-1"></div></div>
+      <div class="sheet-licznik"><span class="sheet-lbl">Pkt. Szczęścia</span><div class="sheet-ulamek"><input type="number" name="attr_ps_akt" value="0" class="sheet-duzy"><span>/</span><input type="number" name="attr_pp" value="0" class="sheet-calc sheet-maks" readonly tabindex="-1"></div></div>
+      <div class="sheet-licznik"><span class="sheet-lbl">Pkt. Obłędu</span><div class="sheet-ulamek"><input type="number" name="attr_po" value="0" class="sheet-calc sheet-duzy" readonly tabindex="-1"></div></div>
+      <button type="roll" name="roll_inicjatywa" class="sheet-btn sheet-btn-ini" value="&{template:wfrp2e} {{name=Inicjatywa}} {{postac=@{character_name}}} {{inicjatywa=[[1d10+@{zr} &{tracker}]]}}">Inicjatywa<small>k10 + Zr</small></button>
+    </div>
+    <div class="sheet-modbar">
+      <label class="sheet-check"><input type="checkbox" name="attr_pytaj" value="1" checked><span>Pytaj o trudność testu</span></label>
+      <label class="sheet-field sheet-inline"><span class="sheet-lbl">Modyfikator stały</span><input type="number" name="attr_mod_staly" value="0"></label>
+      <span class="sheet-hint">np. −10 za ranę krytyczną; dodawany do każdego testu</span>
+    </div>
+  </header>
+
+  <nav class="sheet-tabs">
+    <button type="action" name="act_zcechy" class="sheet-tb sheet-tb-cechy">Cechy i umiejętności</button>
+    <button type="action" name="act_zwalka" class="sheet-tb sheet-tb-walka">Walka</button>
+    <button type="action" name="act_zmagia" class="sheet-tb sheet-tb-magia">Magia</button>
+    <button type="action" name="act_zekw" class="sheet-tb sheet-tb-ekw">Ekwipunek</button>
+    <button type="action" name="act_zbohater" class="sheet-tb sheet-tb-bohater">Bohater</button>
+  </nav>
+
+  <!-- ===================== CECHY I UMIEJĘTNOŚCI ===================== -->
+  <section class="sheet-tab sheet-tab-cechy">
+    <h2>Cechy główne</h2>
+
+      <div class="sheet-scroll">
+        <table class="sheet-profil">
+          <thead><tr><th></th><th title="Walka Wręcz">WW</th><th title="Umiejętności Strzeleckie">US</th><th title="Krzepa">K</th><th title="Odporność">Odp</th><th title="Zręczność">Zr</th><th title="Inteligencja">Int</th><th title="Siła Woli">SW</th><th title="Ogłada">Ogd</th></tr></thead>
+          <tbody>
+            <tr class="sheet-r-pocz"><th>Początkowa</th><td><input type="number" name="attr_ww_pocz" value="0"></td><td><input type="number" name="attr_us_pocz" value="0"></td><td><input type="number" name="attr_k_pocz" value="0"></td><td><input type="number" name="attr_odp_pocz" value="0"></td><td><input type="number" name="attr_zr_pocz" value="0"></td><td><input type="number" name="attr_int_pocz" value="0"></td><td><input type="number" name="attr_sw_pocz" value="0"></td><td><input type="number" name="attr_ogd_pocz" value="0"></td></tr>
+            <tr class="sheet-r-schemat"><th>Schemat rozwoju</th><td><input type="number" name="attr_ww_schemat" value="0"></td><td><input type="number" name="attr_us_schemat" value="0"></td><td><input type="number" name="attr_k_schemat" value="0"></td><td><input type="number" name="attr_odp_schemat" value="0"></td><td><input type="number" name="attr_zr_schemat" value="0"></td><td><input type="number" name="attr_int_schemat" value="0"></td><td><input type="number" name="attr_sw_schemat" value="0"></td><td><input type="number" name="attr_ogd_schemat" value="0"></td></tr>
+            <tr class="sheet-r-rozw"><th>Rozwinięcia</th><td><input type="hidden" name="attr_ww_przekr" value="0" class="sheet-flag"><input type="number" name="attr_ww_rozw" value="0" class="sheet-rozw" step="5" min="0"></td><td><input type="hidden" name="attr_us_przekr" value="0" class="sheet-flag"><input type="number" name="attr_us_rozw" value="0" class="sheet-rozw" step="5" min="0"></td><td><input type="hidden" name="attr_k_przekr" value="0" class="sheet-flag"><input type="number" name="attr_k_rozw" value="0" class="sheet-rozw" step="5" min="0"></td><td><input type="hidden" name="attr_odp_przekr" value="0" class="sheet-flag"><input type="number" name="attr_odp_rozw" value="0" class="sheet-rozw" step="5" min="0"></td><td><input type="hidden" name="attr_zr_przekr" value="0" class="sheet-flag"><input type="number" name="attr_zr_rozw" value="0" class="sheet-rozw" step="5" min="0"></td><td><input type="hidden" name="attr_int_przekr" value="0" class="sheet-flag"><input type="number" name="attr_int_rozw" value="0" class="sheet-rozw" step="5" min="0"></td><td><input type="hidden" name="attr_sw_przekr" value="0" class="sheet-flag"><input type="number" name="attr_sw_rozw" value="0" class="sheet-rozw" step="5" min="0"></td><td><input type="hidden" name="attr_ogd_przekr" value="0" class="sheet-flag"><input type="number" name="attr_ogd_rozw" value="0" class="sheet-rozw" step="5" min="0"></td></tr>
+            <tr class="sheet-r-mod"><th>Modyfikator</th><td><input type="number" name="attr_ww_mod" value="0"></td><td><input type="number" name="attr_us_mod" value="0"></td><td><input type="number" name="attr_k_mod" value="0"></td><td><input type="number" name="attr_odp_mod" value="0"></td><td><input type="number" name="attr_zr_mod" value="0"></td><td><input type="number" name="attr_int_mod" value="0"></td><td><input type="number" name="attr_sw_mod" value="0"></td><td><input type="number" name="attr_ogd_mod" value="0"></td></tr>
+            <tr class="sheet-r-akt"><th>Aktualna</th><td><input type="number" name="attr_ww" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"><button type="action" name="act_tww" class="sheet-dice" title="Test: Walka Wręcz">k100</button></td><td><input type="number" name="attr_us" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"><button type="action" name="act_tus" class="sheet-dice" title="Test: Umiejętności Strzeleckie">k100</button></td><td><input type="number" name="attr_k" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"><button type="action" name="act_tk" class="sheet-dice" title="Test: Krzepa">k100</button></td><td><input type="number" name="attr_odp" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"><button type="action" name="act_todp" class="sheet-dice" title="Test: Odporność">k100</button></td><td><input type="number" name="attr_zr" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"><button type="action" name="act_tzr" class="sheet-dice" title="Test: Zręczność">k100</button></td><td><input type="number" name="attr_int" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"><button type="action" name="act_tint" class="sheet-dice" title="Test: Inteligencja">k100</button></td><td><input type="number" name="attr_sw" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"><button type="action" name="act_tsw" class="sheet-dice" title="Test: Siła Woli">k100</button></td><td><input type="number" name="attr_ogd" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"><button type="action" name="act_togd" class="sheet-dice" title="Test: Ogłada">k100</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    <h2>Cechy drugorzędne</h2>
+
+      <div class="sheet-scroll">
+        <table class="sheet-profil">
+          <thead><tr><th></th><th title="Ataki">A</th><th title="Żywotność">Żyw</th><th title="Siła (K ÷ 10)">S</th><th title="Wytrzymałość (Odp ÷ 10)">Wt</th><th title="Szybkość">Sz</th><th title="Magia">Mag</th><th title="Punkty Obłędu">PO</th><th title="Punkty Przeznaczenia">PP</th></tr></thead>
+          <tbody>
+            <tr class="sheet-r-pocz"><th>Początkowa</th><td><input type="number" name="attr_a_pocz" value="0"></td><td><input type="number" name="attr_zyw_pocz" value="0"></td><td class="sheet-na">–</td><td class="sheet-na">–</td><td><input type="number" name="attr_sz_pocz" value="0"></td><td><input type="number" name="attr_mag_pocz" value="0"></td><td><input type="number" name="attr_po_pocz" value="0"></td><td><input type="number" name="attr_pp_pocz" value="0"></td></tr>
+            <tr class="sheet-r-schemat"><th>Schemat rozwoju</th><td><input type="number" name="attr_a_schemat" value="0"></td><td><input type="number" name="attr_zyw_schemat" value="0"></td><td class="sheet-na">–</td><td class="sheet-na">–</td><td><input type="number" name="attr_sz_schemat" value="0"></td><td><input type="number" name="attr_mag_schemat" value="0"></td><td><input type="number" name="attr_po_schemat" value="0"></td><td><input type="number" name="attr_pp_schemat" value="0"></td></tr>
+            <tr class="sheet-r-rozw"><th>Rozwinięcia</th><td><input type="hidden" name="attr_a_przekr" value="0" class="sheet-flag"><input type="number" name="attr_a_rozw" value="0" class="sheet-rozw" step="1" min="0"></td><td><input type="hidden" name="attr_zyw_przekr" value="0" class="sheet-flag"><input type="number" name="attr_zyw_rozw" value="0" class="sheet-rozw" step="1" min="0"></td><td class="sheet-na">–</td><td class="sheet-na">–</td><td><input type="hidden" name="attr_sz_przekr" value="0" class="sheet-flag"><input type="number" name="attr_sz_rozw" value="0" class="sheet-rozw" step="1" min="0"></td><td><input type="hidden" name="attr_mag_przekr" value="0" class="sheet-flag"><input type="number" name="attr_mag_rozw" value="0" class="sheet-rozw" step="1" min="0"></td><td><input type="hidden" name="attr_po_przekr" value="0" class="sheet-flag"><input type="number" name="attr_po_rozw" value="0" class="sheet-rozw" step="1" min="0"></td><td><input type="hidden" name="attr_pp_przekr" value="0" class="sheet-flag"><input type="number" name="attr_pp_rozw" value="0" class="sheet-rozw" step="1" min="0"></td></tr>
+            <tr class="sheet-r-mod"><th>Modyfikator</th><td><input type="number" name="attr_a_mod" value="0"></td><td><input type="number" name="attr_zyw_mod" value="0"></td><td class="sheet-na">–</td><td class="sheet-na">–</td><td><input type="number" name="attr_sz_mod" value="0"></td><td><input type="number" name="attr_mag_mod" value="0"></td><td><input type="number" name="attr_po_mod" value="0"></td><td><input type="number" name="attr_pp_mod" value="0"></td></tr>
+            <tr class="sheet-r-akt"><th>Aktualna</th><td><input type="number" name="attr_a" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></td><td><input type="number" name="attr_zyw" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></td><td><input type="number" name="attr_s" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></td><td><input type="number" name="attr_wt" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></td><td><input type="number" name="attr_sz" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></td><td><input type="number" name="attr_mag" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></td><td><input type="number" name="attr_po" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></td><td><input type="number" name="attr_pp" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></td></tr>
+          </tbody>
+        </table>
+      </div>
+    <p class="sheet-hint">Rozwinięcia cech głównych kupuje się po +5%, drugorzędnych po +1. Pole świeci na czerwono, gdy rozwinięcia przekraczają schemat obecnej profesji.</p>
+
+    <div class="sheet-kolumny">
+      <div>
+        <h2>Umiejętności podstawowe</h2>
+        <div class="sheet-umiej sheet-umiej-head"><span>Umiejętność</span><span>Cecha</span><span>Poziom</span><span>Mod.</span><span>Cel</span><span></span></div>
+        <div class="sheet-umiej"><span class="sheet-un">Charakteryzacja</span><span class="sheet-uc">Ogd</span><select name="attr_um_charakteryzacja_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_charakteryzacja_mod" value="0"><input type="number" name="attr_um_charakteryzacja" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tcharakteryzacja" class="sheet-dice" title="Test: Charakteryzacja">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Cichy chód</span><span class="sheet-uc">Zr</span><select name="attr_um_cichy_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_cichy_mod" value="0"><input type="number" name="attr_um_cichy" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tcichy" class="sheet-dice" title="Test: Cichy chód">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Dowodzenie</span><span class="sheet-uc">Ogd</span><select name="attr_um_dowodzenie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_dowodzenie_mod" value="0"><input type="number" name="attr_um_dowodzenie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tdowodzenie" class="sheet-dice" title="Test: Dowodzenie">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Hazard</span><span class="sheet-uc">Int</span><select name="attr_um_hazard_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_hazard_mod" value="0"><input type="number" name="attr_um_hazard" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_thazard" class="sheet-dice" title="Test: Hazard">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Jeździectwo</span><span class="sheet-uc">Zr</span><select name="attr_um_jezdziectwo_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_jezdziectwo_mod" value="0"><input type="number" name="attr_um_jezdziectwo" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tjezdziectwo" class="sheet-dice" title="Test: Jeździectwo">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Mocna głowa</span><span class="sheet-uc">Odp</span><select name="attr_um_mocnaglowa_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_mocnaglowa_mod" value="0"><input type="number" name="attr_um_mocnaglowa" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tmocnaglowa" class="sheet-dice" title="Test: Mocna głowa">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Opieka nad zwierzętami</span><span class="sheet-uc">Int</span><select name="attr_um_opieka_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_opieka_mod" value="0"><input type="number" name="attr_um_opieka" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_topieka" class="sheet-dice" title="Test: Opieka nad zwierzętami">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Plotkowanie</span><span class="sheet-uc">Ogd</span><select name="attr_um_plotkowanie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_plotkowanie_mod" value="0"><input type="number" name="attr_um_plotkowanie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tplotkowanie" class="sheet-dice" title="Test: Plotkowanie">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Pływanie</span><span class="sheet-uc">K</span><select name="attr_um_plywanie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_plywanie_mod" value="0"><input type="number" name="attr_um_plywanie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tplywanie" class="sheet-dice" title="Test: Pływanie">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Powożenie</span><span class="sheet-uc">K</span><select name="attr_um_powozenie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_powozenie_mod" value="0"><input type="number" name="attr_um_powozenie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tpowozenie" class="sheet-dice" title="Test: Powożenie">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Przekonywanie</span><span class="sheet-uc">Ogd</span><select name="attr_um_przekonywanie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_przekonywanie_mod" value="0"><input type="number" name="attr_um_przekonywanie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tprzekonywanie" class="sheet-dice" title="Test: Przekonywanie">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Przeszukiwanie</span><span class="sheet-uc">Int</span><select name="attr_um_przeszukiwanie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_przeszukiwanie_mod" value="0"><input type="number" name="attr_um_przeszukiwanie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tprzeszukiwanie" class="sheet-dice" title="Test: Przeszukiwanie">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Sztuka przetrwania</span><span class="sheet-uc">Int</span><select name="attr_um_przetrwanie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_przetrwanie_mod" value="0"><input type="number" name="attr_um_przetrwanie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tprzetrwanie" class="sheet-dice" title="Test: Sztuka przetrwania">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Spostrzegawczość</span><span class="sheet-uc">Int</span><select name="attr_um_spostrzegawczosc_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_spostrzegawczosc_mod" value="0"><input type="number" name="attr_um_spostrzegawczosc" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tspostrzegawczosc" class="sheet-dice" title="Test: Spostrzegawczość">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Targowanie</span><span class="sheet-uc">Ogd</span><select name="attr_um_targowanie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_targowanie_mod" value="0"><input type="number" name="attr_um_targowanie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_ttargowanie" class="sheet-dice" title="Test: Targowanie">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Ukrywanie się</span><span class="sheet-uc">Zr</span><select name="attr_um_ukrywanie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_ukrywanie_mod" value="0"><input type="number" name="attr_um_ukrywanie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tukrywanie" class="sheet-dice" title="Test: Ukrywanie się">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Wioślarstwo</span><span class="sheet-uc">K</span><select name="attr_um_wioslarstwo_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_wioslarstwo_mod" value="0"><input type="number" name="attr_um_wioslarstwo" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_twioslarstwo" class="sheet-dice" title="Test: Wioślarstwo">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Wspinaczka</span><span class="sheet-uc">K</span><select name="attr_um_wspinaczka_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_wspinaczka_mod" value="0"><input type="number" name="attr_um_wspinaczka" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_twspinaczka" class="sheet-dice" title="Test: Wspinaczka">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Wycena</span><span class="sheet-uc">Int</span><select name="attr_um_wycena_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_wycena_mod" value="0"><input type="number" name="attr_um_wycena" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_twycena" class="sheet-dice" title="Test: Wycena">k100</button></div>
+        <div class="sheet-umiej"><span class="sheet-un">Zastraszanie</span><span class="sheet-uc">K</span><select name="attr_um_zastraszanie_poz"><option value="-1" selected>brak (½)</option><option value="0">nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_um_zastraszanie_mod" value="0"><input type="number" name="attr_um_zastraszanie" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_tzastraszanie" class="sheet-dice" title="Test: Zastraszanie">k100</button></div>
+        <p class="sheet-hint">Nieznana umiejętność podstawowa: test z połową cechy.</p>
+      </div>
+      <div>
+        <h2>Umiejętności zaawansowane</h2>
+        <div class="sheet-umiej sheet-umiej-head sheet-zaaw"><span>Umiejętność</span><span>Cecha</span><span>Poziom</span><span>Mod.</span><span>Cel</span><span></span></div>
+        <fieldset class="repeating_umiej">
+          <div class="sheet-umiej sheet-zaaw"><input type="text" name="attr_nazwa" placeholder="np. Splatanie magii"><select name="attr_cecha"><option value="ww">WW</option><option value="us">US</option><option value="k">K</option><option value="odp">Odp</option><option value="zr">Zr</option><option value="int" selected>Int</option><option value="sw">SW</option><option value="ogd">Ogd</option></select><select name="attr_poz"><option value="0" selected>nabyta</option><option value="10">+10%</option><option value="20">+20%</option></select><input type="number" name="attr_mod" value="0"><input type="number" name="attr_cel" value="0" class="sheet-calc" readonly tabindex="-1"><button type="action" name="act_test" class="sheet-dice" title="Test umiejętności">k100</button></div>
+        </fieldset>
+
+        <h2>Zdolności</h2>
+        <fieldset class="repeating_zdol">
+          <div class="sheet-zdol"><input type="text" name="attr_nazwa" placeholder="np. Bardzo silny"><textarea name="attr_opis" placeholder="Opis i działanie zdolności"></textarea></div>
+        </fieldset>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== WALKA ===================== -->
+  <section class="sheet-tab sheet-tab-walka">
+    <h2>Broń</h2>
+    <div class="sheet-bron sheet-bron-head"><span>Nazwa</span><span>Rodzaj</span><span>+S</span><span>Obr.</span><span>Razem</span><span>Zasięg</span><span>Przeład.</span><span>Cechy oręża</span><span></span></div>
+    <fieldset class="repeating_bron">
+      <div class="sheet-bron"><input type="text" name="attr_nazwa" placeholder="np. Broń ręczna"><select name="attr_rodzaj"><option value="wr" selected>Wręcz (WW)</option><option value="dyst">Dystans (US)</option></select><input type="checkbox" name="attr_plus_s" value="1" checked title="Dodaj Siłę do obrażeń"><input type="number" name="attr_obr" value="0"><input type="text" name="attr_obr_opis" value="S" class="sheet-calc" readonly tabindex="-1"><input type="text" name="attr_zasieg" placeholder="—"><input type="text" name="attr_przeladowanie" placeholder="—"><input type="text" name="attr_cechy" placeholder="np. Druzgocząca"><span class="sheet-akcje"><button type="action" name="act_atak" class="sheet-btn sheet-btn-s">Atak</button><button type="action" name="act_obrazenia" class="sheet-btn sheet-btn-s">Obrażenia</button></span><input type="hidden" name="attr_obr_razem" value="0"></div>
+    </fieldset>
+    <p class="sheet-hint">Atak odwraca cyfry rzutu, żeby wyznaczyć lokację trafienia. Naturalne 10 na obrażeniach to Furia Ulryka: karta sama rzuca na potwierdzenie i dorzuca kolejne k10.</p>
+
+    <div class="sheet-kolumny">
+      <div>
+        <h2>Pancerz</h2>
+        <div class="sheet-pancerz sheet-pancerz-head"><span>Lokacja</span><span>k100</span><span>PZ</span><span>+ Wt</span><span>Razem</span></div>
+        <div class="sheet-pancerz"><span>Głowa</span><span class="sheet-zakres">01–15</span><input type="number" name="attr_pz_glowa" value="0" min="0"><input type="number" name="attr_wt_glowa" value="0" class="sheet-calc" readonly tabindex="-1"><input type="number" name="attr_ochr_glowa" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></div>
+        <div class="sheet-pancerz"><span>Prawa ręka</span><span class="sheet-zakres">16–35</span><input type="number" name="attr_pz_reka_p" value="0" min="0"><input type="number" name="attr_wt_reka_p" value="0" class="sheet-calc" readonly tabindex="-1"><input type="number" name="attr_ochr_reka_p" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></div>
+        <div class="sheet-pancerz"><span>Lewa ręka</span><span class="sheet-zakres">36–55</span><input type="number" name="attr_pz_reka_l" value="0" min="0"><input type="number" name="attr_wt_reka_l" value="0" class="sheet-calc" readonly tabindex="-1"><input type="number" name="attr_ochr_reka_l" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></div>
+        <div class="sheet-pancerz"><span>Korpus</span><span class="sheet-zakres">56–80</span><input type="number" name="attr_pz_korpus" value="0" min="0"><input type="number" name="attr_wt_korpus" value="0" class="sheet-calc" readonly tabindex="-1"><input type="number" name="attr_ochr_korpus" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></div>
+        <div class="sheet-pancerz"><span>Prawa noga</span><span class="sheet-zakres">81–90</span><input type="number" name="attr_pz_noga_p" value="0" min="0"><input type="number" name="attr_wt_noga_p" value="0" class="sheet-calc" readonly tabindex="-1"><input type="number" name="attr_ochr_noga_p" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></div>
+        <div class="sheet-pancerz"><span>Lewa noga</span><span class="sheet-zakres">91–00</span><input type="number" name="attr_pz_noga_l" value="0" min="0"><input type="number" name="attr_wt_noga_l" value="0" class="sheet-calc" readonly tabindex="-1"><input type="number" name="attr_ochr_noga_l" value="0" class="sheet-calc sheet-akt" readonly tabindex="-1"></div>
+        <label class="sheet-field"><span class="sheet-lbl">Noszony pancerz</span><textarea name="attr_pancerz_opis" placeholder="np. skórzana kurta (korpus, ręce), skórzany hełm"></textarea></label>
+      </div>
+      <div>
+        <h2>Rany i trafienia krytyczne</h2>
+        <label class="sheet-field"><span class="sheet-lbl">Trafienia krytyczne i urazy</span><textarea name="attr_krytyki" placeholder="np. Wartość krytyczna +3, lewa ręka: złamana kość"></textarea></label>
+        <h2>Ruch (yardy na rundę)</h2>
+        <div class="sheet-ruch">
+          <div><span class="sheet-lbl">Ruch</span><input type="number" name="attr_ruch_zwykly" value="0" class="sheet-calc" readonly tabindex="-1"></div>
+          <div><span class="sheet-lbl">Szarża</span><input type="number" name="attr_ruch_szarza" value="0" class="sheet-calc" readonly tabindex="-1"></div>
+          <div><span class="sheet-lbl">Bieg</span><input type="number" name="attr_ruch_bieg" value="0" class="sheet-calc" readonly tabindex="-1"></div>
+        </div>
+        <p class="sheet-hint">Ruch = Sz × 2, szarża = Sz × 4, bieg = Sz × 6.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MAGIA ===================== -->
+  <section class="sheet-tab sheet-tab-magia">
+    <div class="sheet-magia-top">
+      <div class="sheet-licznik"><span class="sheet-lbl">Magia (kości k10)</span><input type="number" name="attr_mag" value="0" class="sheet-calc sheet-duzy" readonly tabindex="-1"></div>
+      <label class="sheet-field"><span class="sheet-lbl">Tradycja / Wiedza</span><input type="text" name="attr_tradycja" placeholder="np. Tradycja Ognia"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Magia prosta</span><input type="text" name="attr_magia_prosta" placeholder="np. Magia prosta (tajemna)"></label>
+    </div>
+    <h2>Zaklęcia</h2>
+    <div class="sheet-czar sheet-czar-head"><span>Nazwa</span><span>Poziom mocy</span><span>Czas</span><span>Składnik</span><span>Premia</span><span></span></div>
+    <fieldset class="repeating_czary">
+      <div class="sheet-czar"><input type="text" name="attr_nazwa" placeholder="np. Kula ognia"><input type="number" name="attr_pm" value="5" min="0"><input type="text" name="attr_czas" placeholder="1 akcja"><input type="text" name="attr_skladnik" placeholder="np. węgielek"><input type="number" name="attr_premia" value="0"><button type="action" name="act_rzuc" class="sheet-btn sheet-btn-s">Rzuć</button><textarea name="attr_opis" placeholder="Zasięg, cel, czas trwania, efekt"></textarea></div>
+    </fieldset>
+    <p class="sheet-hint">Rzut: tyle k10, ile wynosi Magia, plus premia za składnik. Dublet, triplet lub kareta na kościach oznacza Przekleństwo Tzeentcha. Karta oznacza je w czacie.</p>
+  </section>
+
+  <!-- ===================== EKWIPUNEK ===================== -->
+  <section class="sheet-tab sheet-tab-ekw">
+    <h2>Pieniądze</h2>
+    <div class="sheet-pieniadze">
+      <label class="sheet-field"><span class="sheet-lbl">Złote korony (zk)</span><input type="number" name="attr_zk" value="0"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Srebrne szylingi (s)</span><input type="number" name="attr_szylingi" value="0"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Mosiężne pensy (p)</span><input type="number" name="attr_pensy" value="0"></label>
+      <div class="sheet-licznik"><span class="sheet-lbl">Razem w pensach</span><input type="number" name="attr_pensy_razem" value="0" class="sheet-calc" readonly tabindex="-1"></div>
+    </div>
+    <p class="sheet-hint">1 zk = 20 s = 240 p.</p>
+    <h2>Ekwipunek</h2>
+    <div class="sheet-ekw sheet-ekw-head"><span>Przedmiot</span><span>Ilość</span><span>Obc. (szt.)</span><span>Obc. razem</span></div>
+    <fieldset class="repeating_ekw">
+      <div class="sheet-ekw"><input type="text" name="attr_nazwa" placeholder="np. Lina, 10 yardów"><input type="number" name="attr_ilosc" value="1" min="0"><input type="number" name="attr_obc" value="0" min="0"><input type="number" name="attr_obc_razem" value="0" class="sheet-calc" readonly tabindex="-1"></div>
+    </fieldset>
+    <div class="sheet-obciazenie">
+      <span class="sheet-lbl">Obciążenie</span>
+      <input type="hidden" name="attr_przeciazony" value="0" class="sheet-flag">
+      <div class="sheet-ulamek"><input type="number" name="attr_obc_suma" value="0" class="sheet-calc sheet-duzy" readonly tabindex="-1"><span>/</span><input type="number" name="attr_obc_max" value="0" class="sheet-calc sheet-maks" readonly tabindex="-1"></div>
+      <span class="sheet-hint">Udźwig = K × 10</span>
+    </div>
+  </section>
+
+  <!-- ===================== BOHATER ===================== -->
+  <section class="sheet-tab sheet-tab-bohater">
+    <h2>Opis bohatera</h2>
+    <div class="sheet-siatka">
+      <label class="sheet-field"><span class="sheet-lbl">Gracz</span><input type="text" name="attr_gracz"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Wiek</span><input type="text" name="attr_wiek"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Płeć</span><input type="text" name="attr_plec"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Kolor oczu</span><input type="text" name="attr_oczy"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Kolor włosów</span><input type="text" name="attr_wlosy"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Znak gwiezdny</span><input type="text" name="attr_znak"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Wzrost</span><input type="text" name="attr_wzrost"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Waga</span><input type="text" name="attr_waga"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Rodzeństwo</span><input type="text" name="attr_rodzenstwo"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Miejsce urodzenia</span><input type="text" name="attr_urodzenie"></label>
+      <label class="sheet-field sheet-szeroki"><span class="sheet-lbl">Znaki szczególne</span><input type="text" name="attr_znaki"></label>
+    </div>
+    <h2>Punkty Doświadczenia</h2>
+    <div class="sheet-pd">
+      <label class="sheet-field"><span class="sheet-lbl">Aktualne</span><input type="number" name="attr_pd_akt" value="0"></label>
+      <label class="sheet-field"><span class="sheet-lbl">Wydane</span><input type="number" name="attr_pd_wydane" value="0"></label>
+      <div class="sheet-licznik"><span class="sheet-lbl">Razem</span><input type="number" name="attr_pd_razem" value="0" class="sheet-calc" readonly tabindex="-1"></div>
+    </div>
+    <div class="sheet-kolumny">
+      <div>
+        <h2>Obłęd</h2>
+        <fieldset class="repeating_obled">
+          <div class="sheet-zdol"><input type="text" name="attr_nazwa" placeholder="np. Czarna żółć"><textarea name="attr_opis" placeholder="Objawy"></textarea></div>
+        </fieldset>
+      </div>
+      <div>
+        <h2>Historia i notatki</h2>
+        <textarea name="attr_notatki" class="sheet-notatki" placeholder="Pochodzenie, kontakty, długi, wrogowie…"></textarea>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===================== SZABLON RZUTU ===================== -->
+<rolltemplate class="sheet-rolltemplate-wfrp2e">
+  <div class="sheet-rt">
+    <div class="sheet-rt-head">{{name}}{{#postac}}<span class="sheet-rt-who">{{postac}}</span>{{/postac}}</div>
+    <div class="sheet-rt-body">
+      {{#inicjatywa}}<div class="sheet-rt-row"><span>Inicjatywa</span><span class="sheet-rt-val">{{inicjatywa}}</span></div>{{/inicjatywa}}
+      {{#rzut}}<div class="sheet-rt-row"><span>{{#czar}}Suma k10 + premia{{/czar}}{{^czar}}Rzut k100{{/czar}}</span><span class="sheet-rt-val">{{rzut}}</span></div>{{/rzut}}
+      {{#cel}}<div class="sheet-rt-row"><span>{{#czar}}Poziom mocy{{/czar}}{{^czar}}Cel{{/czar}}</span><span class="sheet-rt-val">{{cel}}</span></div>{{/cel}}
+      {{#sukces}}
+        {{#rollTotal() sukces 1}}<div class="sheet-rt-wynik sheet-rt-ok">Sukces{{#stopnie}} · stopnie: {{stopnie}}{{/stopnie}}</div>{{/rollTotal() sukces 1}}
+        {{#rollTotal() sukces 0}}<div class="sheet-rt-wynik sheet-rt-fail">Porażka{{#stopnie}} · stopnie: {{stopnie}}{{/stopnie}}</div>{{/rollTotal() sukces 0}}
+      {{/sukces}}
+      {{#lokacja}}{{#rollTotal() sukces 1}}<div class="sheet-rt-row"><span>Lokacja</span><span>{{#rollBetween() lokacja 1 15}}Głowa{{/rollBetween() lokacja 1 15}}{{#rollBetween() lokacja 16 35}}Prawa ręka{{/rollBetween() lokacja 16 35}}{{#rollBetween() lokacja 36 55}}Lewa ręka{{/rollBetween() lokacja 36 55}}{{#rollBetween() lokacja 56 80}}Korpus{{/rollBetween() lokacja 56 80}}{{#rollBetween() lokacja 81 90}}Prawa noga{{/rollBetween() lokacja 81 90}}{{#rollBetween() lokacja 91 100}}Lewa noga{{/rollBetween() lokacja 91 100}} <small>({{lokacja}})</small></span></div>{{/rollTotal() sukces 1}}{{/lokacja}}
+      {{#obr}}<div class="sheet-rt-row sheet-rt-duzy"><span>Obrażenia</span><span class="sheet-rt-val">{{obr}}</span></div>{{/obr}}
+      {{#dodatkowe}}<div class="sheet-rt-row"><span>Dodatkowe k10</span><span class="sheet-rt-val">{{dodatkowe}}</span></div>{{/dodatkowe}}
+      {{#razem}}<div class="sheet-rt-row sheet-rt-duzy"><span>Obrażenia razem</span><span class="sheet-rt-val">{{razem}}</span></div>{{/razem}}
+      {{#furia}}{{#rollTotal() furia 1}}<div class="sheet-rt-wynik sheet-rt-furia">Furia Ulryka! Rzut na potwierdzenie poniżej.</div>{{/rollTotal() furia 1}}{{#rollTotal() furia 2}}<div class="sheet-rt-wynik sheet-rt-furia">Znowu 10! Furia trwa.</div>{{/rollTotal() furia 2}}{{/furia}}
+      {{#tz}}
+        {{#rollTotal() tz 2}}<div class="sheet-rt-wynik sheet-rt-chaos">Przekleństwo Tzeentcha: pomniejszy przejaw Chaosu (dublet)</div>{{/rollTotal() tz 2}}
+        {{#rollTotal() tz 3}}<div class="sheet-rt-wynik sheet-rt-chaos">Przekleństwo Tzeentcha: większy przejaw Chaosu (triplet)</div>{{/rollTotal() tz 3}}
+        {{#rollGreater() tz 3}}<div class="sheet-rt-wynik sheet-rt-chaos">Przekleństwo Tzeentcha: katastrofalny przejaw Chaosu (kareta!)</div>{{/rollGreater() tz 3}}
+      {{/tz}}
+      {{#info}}<div class="sheet-rt-info">{{info}}</div>{{/info}}
+      {{#opis}}<div class="sheet-rt-opis">{{opis}}</div>{{/opis}}
+      {{#przycisk}}<div class="sheet-rt-przycisk">{{przycisk}}</div>{{/przycisk}}
+    </div>
+  </div>
+</rolltemplate>
+
+<script type="text/worker">
+'use strict';
+/* ---------- Dane ---------- */
+const CECHY = ['ww', 'us', 'k', 'odp', 'zr', 'int', 'sw', 'ogd'];
+const DRUGO = ['a', 'zyw', 'sz', 'mag', 'po', 'pp'];
+const NAZWY = {
+  ww: 'Walka Wręcz', us: 'Umiejętności Strzeleckie', k: 'Krzepa', odp: 'Odporność',
+  zr: 'Zręczność', int: 'Inteligencja', sw: 'Siła Woli', ogd: 'Ogłada',
+};
+const UMIEJ = {
+  charakteryzacja: ['Charakteryzacja', 'ogd'], cichy: ['Cichy chód', 'zr'], dowodzenie: ['Dowodzenie', 'ogd'],
+  hazard: ['Hazard', 'int'], jezdziectwo: ['Jeździectwo', 'zr'], mocnaglowa: ['Mocna głowa', 'odp'],
+  opieka: ['Opieka nad zwierzętami', 'int'], plotkowanie: ['Plotkowanie', 'ogd'], plywanie: ['Pływanie', 'k'],
+  powozenie: ['Powożenie', 'k'], przekonywanie: ['Przekonywanie', 'ogd'], przeszukiwanie: ['Przeszukiwanie', 'int'],
+  przetrwanie: ['Sztuka przetrwania', 'int'], spostrzegawczosc: ['Spostrzegawczość', 'int'],
+  targowanie: ['Targowanie', 'ogd'], ukrywanie: ['Ukrywanie się', 'zr'], wioslarstwo: ['Wioślarstwo', 'k'],
+  wspinaczka: ['Wspinaczka', 'k'], wycena: ['Wycena', 'int'], zastraszanie: ['Zastraszanie', 'k'],
+};
+const LOKACJE = ['glowa', 'reka_p', 'reka_l', 'korpus', 'noga_p', 'noga_l'];
+const TRUDNOSC = '?{Trudność testu|Przeciętny (+0),0|Rutynowy (+10),10|Łatwy (+20),20|Bardzo łatwy (+30),30|Wymagający (-10),-10|Trudny (-20),-20|Bardzo trudny (-30),-30}';
+
+/* ---------- Pomocnicze ---------- */
+const liczba = (v) => { const n = parseInt(v, 10); return Number.isNaN(n) ? 0 : n; };
+const czysc = (s) => String(s || '').replace(/[{}[\]|]/g, '').replace(/\s+/g, ' ').trim();
+const ze = (n) => (n >= 0 ? `+${n}` : `${n}`);
+// "repeating_bron_-abc_atak" -> "-abc" (identyfikatory wierszy mogą zawierać podkreślniki)
+const idWiersza = (ev, sekcja, przycisk) => {
+  const src = ev.sourceAttribute || ev.triggerName.replace(/^clicked:/, '');
+  return src.slice(`repeating_${sekcja}_`.length, -(`_${przycisk}`.length));
+};
+
+/* ---------- Przeliczanie karty ---------- */
+const POLA_GLOWNE = [
+  ...CECHY.flatMap((c) => [`${c}_pocz`, `${c}_schemat`, `${c}_rozw`, `${c}_mod`]),
+  ...DRUGO.flatMap((c) => [`${c}_pocz`, `${c}_schemat`, `${c}_rozw`, `${c}_mod`]),
+  ...Object.keys(UMIEJ).flatMap((u) => [`um_${u}_poz`, `um_${u}_mod`]),
+  ...LOKACJE.map((l) => `pz_${l}`),
+  'pd_akt', 'pd_wydane', 'zk', 'szylingi', 'pensy',
+];
+
+const przeliczWszystko = () => {
+  getAttrs(POLA_GLOWNE, (v) => {
+    const out = {};
+    CECHY.forEach((c) => {
+      out[c] = liczba(v[`${c}_pocz`]) + liczba(v[`${c}_rozw`]) + liczba(v[`${c}_mod`]);
+      out[`${c}_przekr`] = liczba(v[`${c}_rozw`]) > liczba(v[`${c}_schemat`]) ? 1 : 0;
+    });
+    DRUGO.forEach((c) => {
+      out[c] = liczba(v[`${c}_pocz`]) + liczba(v[`${c}_rozw`]) + liczba(v[`${c}_mod`]);
+      out[`${c}_przekr`] = liczba(v[`${c}_rozw`]) > liczba(v[`${c}_schemat`]) ? 1 : 0;
+    });
+    out.s = Math.floor(Math.max(0, out.k) / 10);
+    out.wt = Math.floor(Math.max(0, out.odp) / 10);
+
+    Object.entries(UMIEJ).forEach(([u, [, cecha]]) => {
+      const poz = liczba(v[`um_${u}_poz`]);
+      const baza = poz < 0 ? Math.floor(out[cecha] / 2) : out[cecha] + poz;
+      out[`um_${u}`] = baza + liczba(v[`um_${u}_mod`]);
+    });
+    LOKACJE.forEach((l) => {
+      out[`wt_${l}`] = out.wt;
+      out[`ochr_${l}`] = liczba(v[`pz_${l}`]) + out.wt;
+    });
+    out.ruch_zwykly = out.sz * 2;
+    out.ruch_szarza = out.sz * 4;
+    out.ruch_bieg = out.sz * 6;
+    out.pd_razem = liczba(v.pd_akt) + liczba(v.pd_wydane);
+    out.pensy_razem = liczba(v.zk) * 240 + liczba(v.szylingi) * 12 + liczba(v.pensy);
+    out.obc_max = Math.max(0, out.k) * 10;
+    setAttrs(out, { silent: true }, () => {
+      przeliczUmiejZaaw();
+      przeliczBron();
+      przeliczEkwipunek();
+    });
+  });
+};
+
+const przeliczUmiejZaaw = () => {
+  getSectionIDs('umiej', (ids) => {
+    const pola = ids.flatMap((id) => ['cecha', 'poz', 'mod'].map((p) => `repeating_umiej_${id}_${p}`));
+    getAttrs([...pola, ...CECHY], (v) => {
+      const out = {};
+      ids.forEach((id) => {
+        const p = `repeating_umiej_${id}_`;
+        const cecha = CECHY.includes(v[`${p}cecha`]) ? v[`${p}cecha`] : 'int';
+        out[`${p}cel`] = liczba(v[cecha]) + liczba(v[`${p}poz`]) + liczba(v[`${p}mod`]);
+      });
+      setAttrs(out, { silent: true });
+    });
+  });
+};
+
+const przeliczBron = () => {
+  getSectionIDs('bron', (ids) => {
+    const pola = ids.flatMap((id) => ['plus_s', 'obr'].map((p) => `repeating_bron_${id}_${p}`));
+    getAttrs([...pola, 's'], (v) => {
+      const out = {};
+      const s = liczba(v.s);
+      ids.forEach((id) => {
+        const p = `repeating_bron_${id}_`;
+        const plusS = v[`${p}plus_s`] === '1';
+        const obr = liczba(v[`${p}obr`]);
+        out[`${p}obr_razem`] = (plusS ? s : 0) + obr;
+        out[`${p}obr_opis`] = plusS ? (obr ? `S${ze(obr)} (${s + obr})` : `S (${s})`) : `${obr}`;
+      });
+      setAttrs(out, { silent: true });
+    });
+  });
+};
+
+const przeliczEkwipunek = () => {
+  getSectionIDs('ekw', (ids) => {
+    const pola = ids.flatMap((id) => ['ilosc', 'obc'].map((p) => `repeating_ekw_${id}_${p}`));
+    getAttrs([...pola, 'obc_max'], (v) => {
+      const out = {};
+      let suma = 0;
+      ids.forEach((id) => {
+        const p = `repeating_ekw_${id}_`;
+        const r = liczba(v[`${p}ilosc`]) * liczba(v[`${p}obc`]);
+        out[`${p}obc_razem`] = r;
+        suma += r;
+      });
+      out.obc_suma = suma;
+      out.przeciazony = suma > liczba(v.obc_max) ? 1 : 0;
+      setAttrs(out, { silent: true });
+    });
+  });
+};
+
+on(`sheet:opened ${POLA_GLOWNE.map((p) => `change:${p}`).join(' ')}`, przeliczWszystko);
+on('change:repeating_umiej remove:repeating_umiej', przeliczUmiejZaaw);
+on('change:repeating_bron remove:repeating_bron', przeliczBron);
+on('change:repeating_ekw remove:repeating_ekw', przeliczEkwipunek);
+
+/* ---------- Zakładki ---------- */
+['cechy', 'walka', 'magia', 'ekw', 'bohater'].forEach((z) => {
+  on(`clicked:z${z}`, () => setAttrs({ zakladka: z }));
+});
+
+/* ---------- Rzuty ---------- */
+const modyfikatory = (v) => `${ze(liczba(v.mod_staly))}${v.pytaj === '1' ? `+${TRUDNOSC}` : ''}`;
+
+// Test procentowy: sukces, gdy k100 <= cel; każde pełne 10 różnicy to jeden stopień.
+const wynikTestu = (rzut, cel) => ({
+  sukces: rzut <= cel ? 1 : 0,
+  stopnie: Math.floor(Math.abs(cel - rzut) / 10),
+});
+
+// Lokacja: odwrócone cyfry rzutu na trafienie (np. 37 -> 73), 00 = 100.
+const lokacja = (rzut) => {
+  const d = String(rzut % 100).padStart(2, '0');
+  const odw = parseInt(d[1] + d[0], 10);
+  return odw === 0 ? 100 : odw;
+};
+
+const test = (nazwa, cel, info) => {
+  getAttrs(['mod_staly', 'pytaj'], (v) => {
+    const tekst = `&{template:wfrp2e} {{name=${czysc(nazwa)}}} {{postac=@{character_name}}} {{rzut=[[1d100]]}} {{cel=[[${liczba(cel)}${modyfikatory(v)}]]}} {{sukces=[[0]]}} {{stopnie=[[0]]}}${info ? ` {{info=${czysc(info)}}}` : ''}`;
+    startRoll(tekst, (r) => {
+      finishRoll(r.rollId, wynikTestu(r.results.rzut.result, r.results.cel.result));
+    });
+  });
+};
+
+CECHY.forEach((c) => {
+  on(`clicked:t${c}`, () => getAttrs([c], (v) => test(`Test: ${NAZWY[c]}`, v[c])));
+});
+Object.entries(UMIEJ).forEach(([u, [nazwa, cecha]]) => {
+  on(`clicked:t${u}`, () => getAttrs([`um_${u}`, `um_${u}_poz`], (v) => {
+    test(nazwa, v[`um_${u}`], liczba(v[`um_${u}_poz`]) < 0 ? `Nieznana: ½ ${cecha.toUpperCase()}` : '');
+  }));
+});
+on('clicked:repeating_umiej:test', (ev) => {
+  const p = `repeating_umiej_${idWiersza(ev, 'umiej', 'test')}_`;
+  getAttrs([`${p}nazwa`, `${p}cel`], (v) => test(v[`${p}nazwa`] || 'Umiejętność', v[`${p}cel`]));
+});
+
+/* Atak bronią */
+on('clicked:repeating_bron:atak', (ev) => {
+  const id = idWiersza(ev, 'bron', 'atak');
+  const p = `repeating_bron_${id}_`;
+  getAttrs([`${p}nazwa`, `${p}rodzaj`, `${p}cechy`, 'ww', 'us', 'mod_staly', 'pytaj'], (v) => {
+    const dyst = v[`${p}rodzaj`] === 'dyst';
+    const cel = liczba(dyst ? v.us : v.ww);
+    const nazwa = czysc(v[`${p}nazwa`]) || 'Broń';
+    const tekst = `&{template:wfrp2e} {{name=Atak: ${nazwa}}} {{postac=@{character_name}}} {{rzut=[[1d100]]}} {{cel=[[${cel}${modyfikatory(v)}]]}} {{sukces=[[0]]}} {{stopnie=[[0]]}} {{lokacja=[[0]]}} {{info=${dyst ? 'US' : 'WW'}${czysc(v[`${p}cechy`]) ? ` · ${czysc(v[`${p}cechy`])}` : ''}}} {{przycisk=[Rzuć obrażenia](~@{character_id}|repeating_bron_${id}_obrazenia)}}`;
+    startRoll(tekst, (r) => {
+      const rzut = r.results.rzut.result;
+      finishRoll(r.rollId, { ...wynikTestu(rzut, r.results.cel.result), lokacja: lokacja(rzut) });
+    });
+  });
+});
+
+/* Obrażenia + Furia Ulryka */
+const furiaDalej = (nazwa, suma) => {
+  startRoll(`&{template:wfrp2e} {{name=Furia Ulryka: ${nazwa}}} {{postac=@{character_name}}} {{dodatkowe=[[1d10]]}} {{razem=[[0]]}} {{furia=[[0]]}}`, (r) => {
+    const k = r.results.dodatkowe.result;
+    finishRoll(r.rollId, { razem: suma + k, furia: k === 10 ? 2 : 0 });
+    if (k === 10) furiaDalej(nazwa, suma + k);
+  });
+};
+
+on('clicked:repeating_bron:obrazenia', (ev) => {
+  const p = `repeating_bron_${idWiersza(ev, 'bron', 'obrazenia')}_`;
+  getAttrs([`${p}nazwa`, `${p}rodzaj`, `${p}obr_razem`, 'ww', 'us', 'mod_staly'], (v) => {
+    const nazwa = czysc(v[`${p}nazwa`]) || 'Broń';
+    const bonus = liczba(v[`${p}obr_razem`]);
+    startRoll(`&{template:wfrp2e} {{name=Obrażenia: ${nazwa}}} {{postac=@{character_name}}} {{obr=[[1d10${ze(bonus)}]]}} {{furia=[[0]]}}`, (r) => {
+      const kosc = r.results.obr.dice[0];
+      const obr = r.results.obr.result;
+      finishRoll(r.rollId, { furia: kosc === 10 ? 1 : 0 });
+      if (kosc !== 10) return;
+      // Potwierdzenie: ponowny test WW/US, ten sam modyfikator stały.
+      const dyst = v[`${p}rodzaj`] === 'dyst';
+      const cel = liczba(dyst ? v.us : v.ww) + liczba(v.mod_staly);
+      startRoll(`&{template:wfrp2e} {{name=Furia Ulryka: potwierdzenie}} {{postac=@{character_name}}} {{rzut=[[1d100]]}} {{cel=[[${cel}]]}} {{sukces=[[0]]}} {{stopnie=[[0]]}} {{dodatkowe=[[1d10]]}} {{razem=[[0]]}} {{furia=[[0]]}}`, (p2) => {
+        const w = wynikTestu(p2.results.rzut.result, p2.results.cel.result);
+        const k = p2.results.dodatkowe.result;
+        const razem = w.sukces ? obr + k : obr;
+        finishRoll(p2.rollId, { ...w, razem, furia: w.sukces && k === 10 ? 2 : 0 });
+        if (w.sukces && k === 10) furiaDalej(nazwa, razem);
+      });
+    });
+  });
+});
+
+/* Rzucanie zaklęć + Przekleństwo Tzeentcha */
+on('clicked:repeating_czary:rzuc', (ev) => {
+  const p = `repeating_czary_${idWiersza(ev, 'czary', 'rzuc')}_`;
+  getAttrs([`${p}nazwa`, `${p}pm`, `${p}premia`, `${p}skladnik`, `${p}czas`, `${p}opis`, 'mag'], (v) => {
+    const kosci = Math.max(1, liczba(v.mag));
+    const info = [v[`${p}czas`] && `Czas: ${v[`${p}czas`]}`, v[`${p}skladnik`] && `Składnik: ${v[`${p}skladnik`]}`].filter(Boolean).join(' · ');
+    const tekst = `&{template:wfrp2e} {{name=Zaklęcie: ${czysc(v[`${p}nazwa`]) || 'bez nazwy'}}} {{postac=@{character_name}}} {{czar=1}} {{rzut=[[${kosci}d10${ze(liczba(v[`${p}premia`]))}+?{Modyfikator rzutu|0}]]}} {{cel=[[${liczba(v[`${p}pm`])}]]}} {{sukces=[[0]]}} {{tz=[[0]]}}${info ? ` {{info=${czysc(info)}}}` : ''}${czysc(v[`${p}opis`]) ? ` {{opis=${czysc(v[`${p}opis`])}}}` : ''}`;
+    startRoll(tekst, (r) => {
+      const ile = {};
+      r.results.rzut.dice.forEach((d) => { ile[d] = (ile[d] || 0) + 1; });
+      const najwiecej = Math.max(0, ...Object.values(ile));
+      finishRoll(r.rollId, {
+        sukces: r.results.rzut.result >= r.results.cel.result ? 1 : 0,
+        tz: najwiecej >= 2 ? najwiecej : 0,
+      });
+    });
+  });
+});
+
+</script>

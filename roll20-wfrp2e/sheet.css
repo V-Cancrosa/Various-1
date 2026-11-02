@@ -1,0 +1,383 @@
+/* Warhammer Fantasy Roleplay 2e — karta Roll20 (PL)
+   Układ: nagłówek z licznikami nad zakładkami; tabele profilu jak na papierowej karcie.
+   Kolory jako zmienne na .charsheet; tryb ciemny Roll20 nadpisuje je przez .sheet-darkmode. */
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+
+.charsheet {
+  --papier: #e6e3d9;      /* welin z Reiklandu, lekko zielonkawy */
+  --pole: #f4f2ec;
+  --tusz: #1f1c19;
+  --tusz-2: #5b554c;
+  --linia: #b8b1a2;
+  --krew: #7d1b1b;
+  --krew-tlo: #f0dcd8;
+  --zielen: #2f5b34;
+  --zielen-tlo: #dce7d6;
+  --mosiadz: #8a6a2a;
+  --mosiadz-tlo: #efe3c4;
+  --chaos: #5a2a7a;
+  --chaos-tlo: #e6dcef;
+  --font-tytul: 'Pirata One', 'UnifrakturCook', Georgia, serif;
+  --font-tekst: 'Alegreya Sans', 'Segoe UI', Helvetica, Arial, sans-serif;
+  background: var(--papier);
+  color: var(--tusz);
+  font-family: var(--font-tekst);
+  font-size: 13px;
+}
+.sheet-darkmode .charsheet {
+  --papier: #18191b;
+  --pole: #222326;
+  --tusz: #e4dfd4;
+  --tusz-2: #a49d90;
+  --linia: #3d3d40;
+  --krew: #d4564b;
+  --krew-tlo: #3a1f1d;
+  --zielen: #7fbf7a;
+  --zielen-tlo: #1f3221;
+  --mosiadz: #d0ab5c;
+  --mosiadz-tlo: #33291a;
+  --chaos: #b98ce0;
+  --chaos-tlo: #2c2036;
+}
+
+.sheet-root { padding: 10px 12px 16px; max-width: 900px; }
+.sheet-root * { box-sizing: border-box; }
+.charsheet h2 {
+  font-family: var(--font-tytul);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.1;
+  color: var(--krew);
+  margin: 14px 0 6px;
+  padding-bottom: 2px;
+  border-bottom: 2px solid var(--tusz);
+  letter-spacing: 0.01em;
+}
+.sheet-lbl {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tusz-2);
+}
+.sheet-hint { font-size: 11px; font-style: italic; color: var(--tusz-2); margin: 4px 0 0; }
+
+/* ---- Pola ---- */
+.charsheet input[type="text"],
+.charsheet input[type="number"],
+.charsheet select,
+.charsheet textarea {
+  width: 100%;
+  height: 26px;
+  margin: 0;
+  padding: 2px 5px;
+  border: 1px solid var(--linia);
+  border-radius: 2px;
+  background: var(--pole);
+  color: var(--tusz);
+  font-family: var(--font-tekst);
+  font-size: 13px;
+  box-shadow: none;
+}
+.charsheet input[type="number"] { text-align: center; font-variant-numeric: tabular-nums; padding: 2px; }
+.charsheet textarea { height: 56px; resize: vertical; }
+.charsheet input:focus, .charsheet select:focus, .charsheet textarea:focus {
+  outline: 2px solid var(--mosiadz);
+  outline-offset: 0;
+}
+.charsheet input.sheet-calc {
+  background: transparent;
+  border-color: transparent;
+  font-weight: 700;
+  pointer-events: none;
+}
+.charsheet input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var(--krew); }
+.sheet-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sheet-field.sheet-inline { flex-direction: row; align-items: center; gap: 6px; }
+.sheet-field.sheet-inline input { width: 56px; }
+
+/* ---- Przyciski ---- */
+.charsheet button[type="roll"]::before { content: none; }
+.charsheet .sheet-btn,
+.charsheet .sheet-dice,
+.charsheet .sheet-tb {
+  cursor: pointer;
+  font-family: var(--font-tekst);
+  border-radius: 2px;
+  margin: 0;
+  text-shadow: none;
+  box-shadow: none;
+  background-image: none;
+}
+.charsheet .sheet-btn {
+  background: var(--krew);
+  color: var(--pole);
+  border: 1px solid var(--krew);
+  font-weight: 700;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+.charsheet .sheet-btn:hover { filter: brightness(1.12); }
+.charsheet .sheet-btn-s { padding: 2px 7px; font-size: 11px; }
+.charsheet .sheet-dice {
+  background: transparent;
+  color: var(--krew);
+  border: 1px solid var(--krew);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 3px;
+  line-height: 1.3;
+}
+.charsheet .sheet-dice:hover { background: var(--krew); color: var(--pole); }
+.charsheet .sheet-btn:focus-visible, .charsheet .sheet-dice:focus-visible, .charsheet .sheet-tb:focus-visible {
+  outline: 2px solid var(--mosiadz);
+  outline-offset: 1px;
+}
+
+/* ---- Nagłówek ---- */
+.sheet-naglowek {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 16px;
+  padding-bottom: 10px;
+  border-bottom: 3px double var(--tusz);
+}
+.sheet-tozsamosc { display: grid; grid-template-columns: 2fr 1fr; gap: 6px 10px; }
+.charsheet input.sheet-imie { font-family: var(--font-tytul); font-size: 22px; height: 32px; }
+.sheet-f-imie { grid-column: 1 / -1; }
+.sheet-liczniki { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.sheet-licznik { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.sheet-ulamek { display: flex; align-items: center; gap: 2px; font-weight: 700; }
+.charsheet input.sheet-duzy { width: 48px; height: 34px; font-size: 20px; font-weight: 700; }
+.charsheet input.sheet-maks { width: 40px; font-size: 16px; }
+.charsheet .sheet-btn-ini { display: flex; flex-direction: column; align-items: center; height: 44px; justify-content: center; }
+.sheet-btn-ini small { font-weight: 400; font-size: 10px; opacity: 0.85; }
+.sheet-modbar {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 5px 8px;
+  background: var(--mosiadz-tlo);
+  border: 1px solid var(--linia);
+}
+.sheet-check { display: flex; align-items: center; gap: 6px; font-weight: 500; }
+.sheet-modbar .sheet-hint { margin: 0; }
+
+@media (max-width: 640px) {
+  .sheet-naglowek, .sheet-tozsamosc, .sheet-magia-top { grid-template-columns: minmax(0, 1fr); }
+  .sheet-liczniki { justify-content: space-between; }
+}
+
+/* ---- Zakładki ---- */
+.sheet-tabs { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 10px; border-bottom: 2px solid var(--tusz); }
+.charsheet .sheet-tb {
+  background: transparent;
+  color: var(--tusz-2);
+  border: 1px solid transparent;
+  border-bottom: none;
+  padding: 5px 12px 3px;
+  font-family: var(--font-tytul);
+  font-size: 17px;
+}
+.charsheet .sheet-tb:hover { color: var(--krew); }
+.sheet-tab { display: none; }
+.sheet-tabstate[value="cechy"] ~ .sheet-tab-cechy,
+.sheet-tabstate[value="walka"] ~ .sheet-tab-walka,
+.sheet-tabstate[value="magia"] ~ .sheet-tab-magia,
+.sheet-tabstate[value="ekw"] ~ .sheet-tab-ekw,
+.sheet-tabstate[value="bohater"] ~ .sheet-tab-bohater { display: block; }
+.sheet-tabstate[value="cechy"] ~ .sheet-tabs .sheet-tb-cechy,
+.sheet-tabstate[value="walka"] ~ .sheet-tabs .sheet-tb-walka,
+.sheet-tabstate[value="magia"] ~ .sheet-tabs .sheet-tb-magia,
+.sheet-tabstate[value="ekw"] ~ .sheet-tabs .sheet-tb-ekw,
+.sheet-tabstate[value="bohater"] ~ .sheet-tabs .sheet-tb-bohater {
+  background: var(--tusz);
+  color: var(--papier);
+  border-color: var(--tusz);
+}
+
+/* ---- Profil ---- */
+.sheet-scroll { overflow-x: auto; }
+.sheet-profil { width: 100%; min-width: 560px; border-collapse: collapse; table-layout: fixed; }
+.sheet-profil th, .sheet-profil td { border: 1px solid var(--linia); padding: 2px; text-align: center; }
+.sheet-profil thead th {
+  font-family: var(--font-tytul);
+  font-weight: 400;
+  font-size: 17px;
+  background: var(--tusz);
+  color: var(--papier);
+  border-color: var(--tusz);
+}
+.sheet-profil tbody th {
+  width: 118px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tusz-2);
+  padding-left: 6px;
+}
+.sheet-profil thead th:first-child { width: 118px; background: transparent; border-color: transparent; }
+.sheet-profil td.sheet-na { color: var(--tusz-2); }
+.sheet-profil .sheet-r-akt td, .sheet-profil .sheet-r-akt th { background: var(--mosiadz-tlo); }
+.sheet-profil .sheet-r-akt td { display: table-cell; }
+.sheet-profil .sheet-r-akt input.sheet-akt { font-size: 17px; height: 26px; }
+.sheet-profil .sheet-dice { display: block; margin: 0 auto 2px; }
+.sheet-flag[value="1"] + .sheet-rozw { background: var(--krew-tlo); border-color: var(--krew); color: var(--krew); font-weight: 700; }
+
+/* ---- Kolumny ---- */
+.sheet-kolumny { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 0 20px; }
+.sheet-kolumny > div { min-width: 0; }
+
+/* ---- Umiejętności ---- */
+.sheet-umiej {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px 84px 44px 38px 38px;
+  gap: 3px;
+  align-items: center;
+  padding: 1px 0;
+  border-bottom: 1px dotted var(--linia);
+}
+.sheet-umiej.sheet-zaaw { grid-template-columns: minmax(0, 1fr) 54px 74px 44px 38px 38px; }
+.sheet-umiej-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tusz-2); border-bottom: 1px solid var(--tusz); }
+.sheet-un { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sheet-uc { font-size: 11px; color: var(--tusz-2); text-align: center; }
+.sheet-umiej input.sheet-calc { font-size: 15px; }
+
+.sheet-zdol { display: grid; gap: 3px; padding: 4px 0; border-bottom: 1px dotted var(--linia); }
+.sheet-zdol input[type="text"] { font-weight: 700; }
+.sheet-zdol textarea { height: 40px; }
+
+/* ---- Broń ---- */
+.sheet-bron {
+  display: grid;
+  grid-template-columns: minmax(110px, 1.6fr) 104px 22px 44px 72px 56px 56px minmax(80px, 1.2fr) 136px;
+  gap: 3px;
+  align-items: center;
+  padding: 2px 0;
+  border-bottom: 1px dotted var(--linia);
+}
+.sheet-bron-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tusz-2); border-bottom: 1px solid var(--tusz); }
+.sheet-bron input[type="checkbox"] { justify-self: center; }
+.sheet-akcje { display: flex; gap: 3px; }
+.charsheet .sheet-bron input.sheet-calc { text-align: left; }
+.charsheet .sheet-tab-walka .repcontainer,
+.charsheet .sheet-tab-walka .sheet-bron-head { min-width: 760px; }
+.sheet-tab-walka { overflow-x: auto; }
+
+/* ---- Pancerz ---- */
+.sheet-pancerz { display: grid; grid-template-columns: minmax(0, 1fr) 54px 50px 46px 50px; gap: 3px; align-items: center; padding: 1px 0; border-bottom: 1px dotted var(--linia); }
+.sheet-pancerz-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tusz-2); border-bottom: 1px solid var(--tusz); }
+.sheet-zakres { font-size: 11px; color: var(--tusz-2); font-variant-numeric: tabular-nums; }
+.sheet-pancerz input.sheet-akt { font-size: 16px; color: var(--krew); }
+.sheet-pancerz + .sheet-field { margin-top: 8px; }
+.sheet-ruch { display: flex; gap: 16px; }
+.sheet-ruch input.sheet-calc { width: 56px; font-size: 18px; }
+
+/* ---- Magia ---- */
+.sheet-magia-top { display: grid; grid-template-columns: auto 1fr 1fr; gap: 10px; align-items: end; margin-top: 10px; }
+.sheet-czar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) 70px 80px minmax(0, 1fr) 54px 50px;
+  gap: 3px;
+  align-items: center;
+  padding: 3px 0;
+  border-bottom: 1px dotted var(--linia);
+}
+.sheet-czar textarea { grid-column: 1 / -1; height: 34px; }
+.sheet-czar-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tusz-2); border-bottom: 1px solid var(--tusz); }
+
+/* ---- Ekwipunek ---- */
+.sheet-pieniadze, .sheet-pd { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; align-items: end; }
+.sheet-ekw { display: grid; grid-template-columns: minmax(0, 1fr) 56px 76px 76px; gap: 3px; align-items: center; padding: 1px 0; border-bottom: 1px dotted var(--linia); }
+.sheet-ekw-head { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tusz-2); border-bottom: 1px solid var(--tusz); }
+.sheet-obciazenie { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 6px 8px; border: 1px solid var(--linia); background: var(--pole); }
+.sheet-flag[value="1"] + .sheet-ulamek input { color: var(--krew); }
+
+/* ---- Bohater ---- */
+.sheet-siatka { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 10px; }
+.sheet-szeroki { grid-column: 1 / -1; }
+.charsheet textarea.sheet-notatki { height: 180px; }
+
+/* ---- Repeating: przyciski Roll20 ---- */
+.charsheet .repcontrol { margin-top: 4px; }
+.charsheet .repcontrol_add, .charsheet .repcontrol_edit {
+  background: transparent;
+  color: var(--tusz-2);
+  border: 1px solid var(--linia);
+  box-shadow: none;
+  text-shadow: none;
+  background-image: none;
+}
+
+/* ======================= Szablon rzutu ======================= */
+.sheet-rolltemplate-wfrp2e .sheet-rt {
+  border: 2px solid #1f1c19;
+  background: #f4f2ec;
+  color: #1f1c19;
+  font-family: 'Alegreya Sans', 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  margin-left: -7px;
+}
+.sheet-rolltemplate-wfrp2e .sheet-rt-head {
+  background: #7d1b1b;
+  color: #f4f2ec;
+  font-family: 'Pirata One', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.15;
+  padding: 4px 8px;
+}
+.sheet-rolltemplate-wfrp2e .sheet-rt-who {
+  display: block;
+  font-family: 'Alegreya Sans', 'Segoe UI', Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  opacity: 0.8;
+}
+.sheet-rolltemplate-wfrp2e .sheet-rt-body { padding: 4px 8px 6px; }
+.sheet-rolltemplate-wfrp2e .sheet-rt-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+  border-bottom: 1px dotted #b8b1a2;
+}
+.sheet-rolltemplate-wfrp2e .sheet-rt-duzy { font-size: 16px; font-weight: 700; }
+.sheet-rolltemplate-wfrp2e .inlinerollresult {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-weight: 700;
+  font-size: 15px;
+  color: #1f1c19;
+}
+.sheet-rolltemplate-wfrp2e .inlinerollresult.fullcrit,
+.sheet-rolltemplate-wfrp2e .inlinerollresult.fullfail,
+.sheet-rolltemplate-wfrp2e .inlinerollresult.importantroll { border: none; }
+.sheet-rolltemplate-wfrp2e .sheet-rt-wynik {
+  margin: 5px 0 2px;
+  padding: 3px 6px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+}
+.sheet-rolltemplate-wfrp2e .sheet-rt-ok { background: #dce7d6; color: #2f5b34; border: 1px solid #2f5b34; }
+.sheet-rolltemplate-wfrp2e .sheet-rt-fail { background: #f0dcd8; color: #7d1b1b; border: 1px solid #7d1b1b; }
+.sheet-rolltemplate-wfrp2e .sheet-rt-furia { background: #efe3c4; color: #6b4f15; border: 1px solid #8a6a2a; }
+.sheet-rolltemplate-wfrp2e .sheet-rt-chaos { background: #e6dcef; color: #5a2a7a; border: 1px solid #5a2a7a; }
+.sheet-rolltemplate-wfrp2e .sheet-rt-info { font-size: 11px; color: #5b554c; margin-top: 4px; }
+.sheet-rolltemplate-wfrp2e .sheet-rt-opis { font-size: 12px; font-style: italic; margin-top: 4px; }
+.sheet-rolltemplate-wfrp2e .sheet-rt-przycisk { margin-top: 6px; text-align: center; }
+.sheet-rolltemplate-wfrp2e .sheet-rt-przycisk a {
+  display: inline-block;
+  background: #7d1b1b;
+  border: none;
+  color: #f4f2ec;
+  font-weight: 700;
+  padding: 3px 10px;
+}
