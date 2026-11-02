@@ -115,9 +115,9 @@
   <!-- ===================== WALKA ===================== -->
   <section class="sheet-tab sheet-tab-walka">
     <h2>Broń</h2>
-    <div class="sheet-bron sheet-bron-head"><span>Nazwa</span><span>Rodzaj</span><span>+S</span><span>Obr.</span><span>Razem</span><span>Zasięg</span><span>Przeład.</span><span>Cechy oręża</span><span></span></div>
+    <div class="sheet-bron sheet-bron-head"><span>Nazwa</span><span>Rodzaj</span><span>+S</span><span>Obr.</span><span>Razem</span><span>Zasięg</span><span>Przeład.</span><span>Cechy oręża</span><span></span><span></span></div>
     <fieldset class="repeating_bron">
-      <div class="sheet-bron"><input type="text" name="attr_nazwa" placeholder="np. Broń ręczna"><select name="attr_rodzaj"><option value="wr" selected>Wręcz (WW)</option><option value="dyst">Dystans (US)</option></select><input type="checkbox" name="attr_plus_s" value="1" checked title="Dodaj Siłę do obrażeń"><input type="number" name="attr_obr" value="0"><input type="text" name="attr_obr_opis" value="S" class="sheet-calc" readonly tabindex="-1"><input type="text" name="attr_zasieg" placeholder="—"><input type="text" name="attr_przeladowanie" placeholder="—"><input type="text" name="attr_cechy" placeholder="np. Druzgocząca"><span class="sheet-akcje"><button type="action" name="act_atak" class="sheet-btn sheet-btn-s">Atak</button><button type="action" name="act_obrazenia" class="sheet-btn sheet-btn-s">Obrażenia</button></span><input type="hidden" name="attr_obr_razem" value="0"></div>
+      <div class="sheet-bron"><input type="text" name="attr_nazwa" placeholder="np. Broń ręczna"><select name="attr_rodzaj"><option value="wr" selected>Wręcz (WW)</option><option value="dyst">Dystans (US)</option></select><input type="checkbox" name="attr_plus_s" value="1" checked title="Dodaj Siłę do obrażeń"><input type="number" name="attr_obr" value="0"><input type="text" name="attr_obr_opis" value="S" class="sheet-calc" readonly tabindex="-1"><input type="text" name="attr_zasieg" placeholder="—"><input type="text" name="attr_przeladowanie" placeholder="—"><input type="text" name="attr_cechy" placeholder="np. Druzgocząca"><span class="sheet-akcje"><button type="action" name="act_atak" class="sheet-btn sheet-btn-s">Atak</button><button type="action" name="act_obrazenia" class="sheet-btn sheet-btn-s">Obrażenia</button></span><input type="hidden" name="attr_obr_razem" value="0"><input type="checkbox" name="attr_ustaw" value="1" class="sheet-zebatka" title="Dopisek do rzutu"><div class="sheet-ustaw"><label class="sheet-field"><span class="sheet-lbl">Dopisek do ataku</span><input type="text" name="attr_dopisek_atak" placeholder="np. {{info=Atak z zaskoczenia}}"></label><label class="sheet-field"><span class="sheet-lbl">Dopisek do obrażeń</span><input type="text" name="attr_dopisek_obr" placeholder="np. {{obr=[[2d10]]}}"></label><p class="sheet-hint">Doklejane na końcu rzutu bez zmian. Pole o tej samej nazwie nadpisuje pole karty (ostatnie wygrywa), np. <code>{{obr=[[2d10+3]]}}</code>, albo dodaje tekst: <code>{{info=Cel płonie}}</code>.</p></div></div>
     </fieldset>
     <p class="sheet-hint">Atak odwraca cyfry rzutu, żeby wyznaczyć lokację trafienia. Naturalne 10 na obrażeniach to Furia Ulryka: karta sama rzuca na potwierdzenie i dorzuca kolejne k10.</p>
 
@@ -156,9 +156,9 @@
       <label class="sheet-field"><span class="sheet-lbl">Magia prosta</span><input type="text" name="attr_magia_prosta" placeholder="np. Magia prosta (tajemna)"></label>
     </div>
     <h2>Zaklęcia</h2>
-    <div class="sheet-czar sheet-czar-head"><span>Nazwa</span><span>Poziom mocy</span><span>Czas</span><span>Składnik</span><span>Premia</span><span></span></div>
+    <div class="sheet-czar sheet-czar-head"><span>Nazwa</span><span>Poziom mocy</span><span>Czas</span><span>Składnik</span><span>Premia</span><span></span><span></span></div>
     <fieldset class="repeating_czary">
-      <div class="sheet-czar"><input type="text" name="attr_nazwa" placeholder="np. Kula ognia"><input type="number" name="attr_pm" value="5" min="0"><input type="text" name="attr_czas" placeholder="1 akcja"><input type="text" name="attr_skladnik" placeholder="np. węgielek"><input type="number" name="attr_premia" value="0"><button type="action" name="act_rzuc" class="sheet-btn sheet-btn-s">Rzuć</button><textarea name="attr_opis" placeholder="Zasięg, cel, czas trwania, efekt"></textarea></div>
+      <div class="sheet-czar"><input type="text" name="attr_nazwa" placeholder="np. Kula ognia"><input type="number" name="attr_pm" value="5" min="0"><input type="text" name="attr_czas" placeholder="1 akcja"><input type="text" name="attr_skladnik" placeholder="np. węgielek"><input type="number" name="attr_premia" value="0"><button type="action" name="act_rzuc" class="sheet-btn sheet-btn-s">Rzuć</button><input type="checkbox" name="attr_ustaw" value="1" class="sheet-zebatka" title="Dopisek do rzutu"><div class="sheet-ustaw"><label class="sheet-field"><span class="sheet-lbl">Dopisek do rzutu</span><input type="text" name="attr_dopisek" placeholder="np. {{info=Wymaga linii wzroku}}"></label><p class="sheet-hint">Doklejane na końcu rzutu bez zmian. Pole o tej samej nazwie nadpisuje pole karty (ostatnie wygrywa), np. <code>{{obr=[[2d10+3]]}}</code>, albo dodaje tekst: <code>{{info=Cel płonie}}</code>.</p></div><textarea name="attr_opis" placeholder="Zasięg, cel, czas trwania, efekt"></textarea></div>
     </fieldset>
     <p class="sheet-hint">Rzut: tyle k10, ile wynosi Magia, plus premia za składnik. Dublet, triplet lub kareta na kościach oznacza Przekleństwo Tzeentcha. Karta oznacza je w czacie.</p>
   </section>
@@ -279,6 +279,9 @@ const TRUDNOSC = '?{Trudność testu|Przeciętny (+0),0|Rutynowy (+10),10|Łatwy
 const liczba = (v) => { const n = parseInt(v, 10); return Number.isNaN(n) ? 0 : n; };
 const czysc = (s) => String(s || '').replace(/[{}[\]|]/g, '').replace(/\s+/g, ' ').trim();
 const zakres = (n, min, max) => Math.min(max, Math.max(min, n));
+// Dopisek do rzutu wklejany BEZ czyszczenia, na samym końcu: pola o tej samej nazwie nadpisują wcześniejsze
+// (ostatnie wygrywa), więc gracz może świadomie podmienić np. {{obr=[[2d10+3]]}} albo dodać {{info=...}}.
+const dopisek = (s) => (String(s || '').trim() ? ` ${String(s).replace(/\s+/g, ' ').trim()}` : '');
 const ze = (n) => (n >= 0 ? `+${n}` : `${n}`);
 // "repeating_bron_-abc_atak" -> "-abc" (identyfikatory wierszy mogą zawierać podkreślniki)
 const idWiersza = (ev, sekcja, przycisk) => {
@@ -454,11 +457,11 @@ on('clicked:repeating_umiej:test', (ev) => {
 on('clicked:repeating_bron:atak', (ev) => {
   const id = idWiersza(ev, 'bron', 'atak');
   const p = `repeating_bron_${id}_`;
-  getAttrs([`${p}nazwa`, `${p}rodzaj`, `${p}cechy`, 'ww', 'us', 'mod_staly', 'pytaj'], (v) => {
+  getAttrs([`${p}nazwa`, `${p}rodzaj`, `${p}cechy`, `${p}dopisek_atak`, 'ww', 'us', 'mod_staly', 'pytaj'], (v) => {
     const dyst = v[`${p}rodzaj`] === 'dyst';
     const cel = liczba(dyst ? v.us : v.ww);
     const nazwa = czysc(v[`${p}nazwa`]) || 'Broń';
-    const tekst = `&{template:wfrp2e} {{name=Atak: ${nazwa}}} {{postac=@{character_name}}} {{rzut=[[1d100]]}} {{cel=[[${cel}${modyfikatory(v)}]]}} {{sukces=[[0]]}} {{stopnie=[[0]]}} {{lokacja=[[0]]}} {{info=${dyst ? 'US' : 'WW'}${czysc(v[`${p}cechy`]) ? ` · ${czysc(v[`${p}cechy`])}` : ''}}} {{przycisk=[Rzuć obrażenia](~@{character_id}|repeating_bron_${id}_obrazenia)}}`;
+    const tekst = `&{template:wfrp2e} {{name=Atak: ${nazwa}}} {{postac=@{character_name}}} {{rzut=[[1d100]]}} {{cel=[[${cel}${modyfikatory(v)}]]}} {{sukces=[[0]]}} {{stopnie=[[0]]}} {{lokacja=[[0]]}} {{info=${dyst ? 'US' : 'WW'}${czysc(v[`${p}cechy`]) ? ` · ${czysc(v[`${p}cechy`])}` : ''}}} {{przycisk=[Rzuć obrażenia](~@{character_id}|repeating_bron_${id}_obrazenia)}}${dopisek(v[`${p}dopisek_atak`])}`;
     startRoll(tekst, (r) => {
       const rzut = r.results.rzut.result;
       finishRoll(r.rollId, { ...wynikTestu(rzut, r.results.cel.result), lokacja: lokacja(rzut) });
@@ -477,10 +480,10 @@ const furiaDalej = (nazwa, suma) => {
 
 on('clicked:repeating_bron:obrazenia', (ev) => {
   const p = `repeating_bron_${idWiersza(ev, 'bron', 'obrazenia')}_`;
-  getAttrs([`${p}nazwa`, `${p}rodzaj`, `${p}obr_razem`, 'ww', 'us', 'mod_staly'], (v) => {
+  getAttrs([`${p}nazwa`, `${p}rodzaj`, `${p}obr_razem`, `${p}dopisek_obr`, 'ww', 'us', 'mod_staly'], (v) => {
     const nazwa = czysc(v[`${p}nazwa`]) || 'Broń';
     const bonus = liczba(v[`${p}obr_razem`]);
-    startRoll(`&{template:wfrp2e} {{name=Obrażenia: ${nazwa}}} {{postac=@{character_name}}} {{obr=[[1d10${ze(bonus)}]]}} {{furia=[[0]]}}`, (r) => {
+    startRoll(`&{template:wfrp2e} {{name=Obrażenia: ${nazwa}}} {{postac=@{character_name}}} {{obr=[[1d10${ze(bonus)}]]}} {{furia=[[0]]}}${dopisek(v[`${p}dopisek_obr`])}`, (r) => {
       const kosc = r.results.obr.dice[0];
       const obr = r.results.obr.result;
       finishRoll(r.rollId, { furia: kosc === 10 ? 1 : 0 });
@@ -502,10 +505,10 @@ on('clicked:repeating_bron:obrazenia', (ev) => {
 /* Rzucanie zaklęć + Przekleństwo Tzeentcha */
 on('clicked:repeating_czary:rzuc', (ev) => {
   const p = `repeating_czary_${idWiersza(ev, 'czary', 'rzuc')}_`;
-  getAttrs([`${p}nazwa`, `${p}pm`, `${p}premia`, `${p}skladnik`, `${p}czas`, `${p}opis`, 'mag'], (v) => {
+  getAttrs([`${p}nazwa`, `${p}pm`, `${p}premia`, `${p}skladnik`, `${p}czas`, `${p}opis`, `${p}dopisek`, 'mag'], (v) => {
     const kosci = Math.max(1, liczba(v.mag));
     const info = [v[`${p}czas`] && `Czas: ${v[`${p}czas`]}`, v[`${p}skladnik`] && `Składnik: ${v[`${p}skladnik`]}`].filter(Boolean).join(' · ');
-    const tekst = `&{template:wfrp2e} {{name=Zaklęcie: ${czysc(v[`${p}nazwa`]) || 'bez nazwy'}}} {{postac=@{character_name}}} {{czar=1}} {{rzut=[[${kosci}d10${ze(liczba(v[`${p}premia`]))}+?{Modyfikator rzutu|0}]]}} {{cel=[[${liczba(v[`${p}pm`])}]]}} {{sukces=[[0]]}} {{tz=[[0]]}}${info ? ` {{info=${czysc(info)}}}` : ''}${czysc(v[`${p}opis`]) ? ` {{opis=${czysc(v[`${p}opis`])}}}` : ''}`;
+    const tekst = `&{template:wfrp2e} {{name=Zaklęcie: ${czysc(v[`${p}nazwa`]) || 'bez nazwy'}}} {{postac=@{character_name}}} {{czar=1}} {{rzut=[[${kosci}d10${ze(liczba(v[`${p}premia`]))}+?{Modyfikator rzutu|0}]]}} {{cel=[[${liczba(v[`${p}pm`])}]]}} {{sukces=[[0]]}} {{tz=[[0]]}}${info ? ` {{info=${czysc(info)}}}` : ''}${czysc(v[`${p}opis`]) ? ` {{opis=${czysc(v[`${p}opis`])}}}` : ''}${dopisek(v[`${p}dopisek`])}`;
     startRoll(tekst, (r) => {
       const ile = {};
       r.results.rzut.dice.forEach((d) => { ile[d] = (ile[d] || 0) + 1; });

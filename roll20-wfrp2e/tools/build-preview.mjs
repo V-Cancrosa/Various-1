@@ -54,7 +54,7 @@ const preset = {
     bron: [
       { nazwa: 'Kostur', rodzaj: 'wr', plus_s: '1', obr: 0, cechy: 'Ogłuszająca, Parujący' },
       { nazwa: 'Sztylet', rodzaj: 'wr', plus_s: '1', obr: -3, cechy: '—' },
-      { nazwa: 'Proca', rodzaj: 'dyst', plus_s: '0', obr: 3, zasieg: '16/32', przeladowanie: 'Pół akcji', cechy: '—' },
+      { nazwa: 'Proca', rodzaj: 'dyst', plus_s: '0', obr: 3, zasieg: '16/32', przeladowanie: 'Pół akcji', cechy: '—', ustaw: '1', dopisek_obr: '{{info=Kamień z rzeki Reik}}' },
     ],
     czary: [
       { nazwa: 'Ognisty pocisk', pm: 6, czas: 'Pół akcji', skladnik: 'Węgielek', premia: 1, opis: 'Pocisk o Sile 4 trafia cel w zasięgu 24 yardów.' },

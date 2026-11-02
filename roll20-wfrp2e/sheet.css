@@ -592,12 +592,12 @@
 .sheet-zdol textarea { height: 42px; }
 
 /* Broń */
-.sheet-bron { grid-template-columns: minmax(110px, 1.6fr) 104px 22px 44px 72px 56px 64px minmax(80px, 1.2fr) 148px; }
+.sheet-bron { grid-template-columns: minmax(110px, 1.6fr) 104px 22px 44px 72px 56px 64px minmax(80px, 1.2fr) 148px 22px; }
 .sheet-bron input[type="checkbox"] { justify-self: center; }
 .sheet-akcje { display: flex; gap: 4px; }
 .charsheet .sheet-bron input.sheet-calc { text-align: left; }
 .sheet-tab-walka { overflow-x: auto; }
-.charsheet .sheet-tab-walka .repcontainer, .charsheet .sheet-tab-walka .sheet-bron-head { min-width: 780px; }
+.charsheet .sheet-tab-walka .repcontainer, .charsheet .sheet-tab-walka .sheet-bron-head { min-width: 810px; }
 
 /* Pancerz */
 .sheet-pancerz { grid-template-columns: minmax(0, 1fr) 54px 50px 46px 50px; }
@@ -661,7 +661,7 @@
 .sheet-krag input.sheet-duzy { position: relative; z-index: 1; height: 34px; font-size: 32px; color: var(--tusz); text-shadow: 0 0 8px var(--wiatr); }
 .sheet-krag-k { position: relative; z-index: 1; font-size: 10px; font-weight: 700; color: var(--tusz-2); }
 @keyframes obrot { to { transform: rotate(360deg); } }
-.sheet-czar { grid-template-columns: minmax(0, 1.5fr) 72px 84px minmax(0, 1fr) 56px 54px; padding: 4px 0 6px; }
+.sheet-czar { grid-template-columns: minmax(0, 1.5fr) 72px 84px minmax(0, 1fr) 56px 54px 22px; padding: 4px 0 6px; }
 .sheet-czar textarea { grid-column: 1 / -1; height: 36px; }
 .sheet-tab-magia .repitem { border-left: 3px solid transparent; padding-left: 6px; transition: border-color 0.2s, box-shadow 0.2s; }
 .sheet-tab-magia .repitem:hover { border-left-color: var(--wiatr); box-shadow: -6px 0 14px -8px var(--wiatr); }
@@ -670,6 +670,39 @@
   color: #1a120c;
   text-shadow: 0 1px 0 rgb(255 255 255 / 0.35);
 }
+
+/* ======================= Zębatka: dopisek do rzutu (checkbox + ~, bez JS) ======================= */
+.charsheet input.sheet-zebatka {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+  color: var(--tusz-2);
+  transition: transform 0.3s, color 0.15s;
+}
+.charsheet input.sheet-zebatka::before { content: "⚙"; font-size: 16px; line-height: 1; }
+.charsheet input.sheet-zebatka:hover { color: var(--krew); transform: rotate(45deg); }
+.charsheet input.sheet-zebatka:checked { color: var(--krew); transform: rotate(90deg); }
+.charsheet input.sheet-zebatka:focus-visible { outline: 2px solid var(--mosiadz); outline-offset: 1px; }
+.sheet-ustaw {
+  display: none;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px 12px;
+  margin: 2px 0 4px;
+  padding: 6px 8px;
+  border: 1px dashed var(--mosiadz);
+  background: var(--mosiadz-tlo);
+}
+.sheet-zebatka:checked ~ .sheet-ustaw { display: grid; animation: kartkowanie 0.25s ease-out; }
+.sheet-ustaw .sheet-hint { grid-column: 1 / -1; margin: 0; }
+.sheet-ustaw code { font-size: 11px; font-style: normal; background: var(--pole); padding: 0 3px; }
+.sheet-ustaw input[type="text"] { font-family: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace; font-size: 12px; }
 
 /* ======================= Ekwipunek ======================= */
 .sheet-pieniadze, .sheet-pd { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; align-items: end; }

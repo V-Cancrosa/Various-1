@@ -44,6 +44,20 @@ w kształcie ścianki k10, skórzane zakładki z animacją kartkowania. Szablon 
 przy Furii Ulryka i mieniący się pasek przy Przekleństwie Tzeentcha. Przy `prefers-reduced-motion` ruch jest
 wyłączony.
 
+## Dopisek do rzutu (⚙)
+Przy każdej broni i zaklęciu jest zębatka ⚙. Rozwija panel samym CSS-em (checkbox + `~`). W panelu wpisujesz
+dopisek, który karta dokleja **na końcu** rzutu bez zmian. To wykorzystuje znaną sztuczkę z forum Roll20 („Overwriting
+template fields in macros”): gdy pole szablonu powtarza się w rzucie, wygrywa ostatnie. Przykłady:
+
+- `{{obr=[[2d10+3]]}}` podmienia rzut obrażeń, na przykład dla broni z homebrew.
+- `{{info=Cel płonie}}` dopisuje notkę do wiadomości.
+- `{{opis=…}}` podmienia opis zaklęcia w czacie.
+
+Furia Ulryka nadal patrzy na pierwszą kość z pola `obr`, a Przekleństwo Tzeentcha na kości z pola `rzut`.
+
+Pozostały tekst gracza (nazwy, cechy oręża, opisy, składniki) karta czyści z `{ } [ ] |`, zanim trafi do rzutu.
+Dlatego nazwa broni typu `Sztylet}} {{sukces=[[1]]` nie nadpisze wyniku testu, tylko wyświetli się jako tekst.
+
 ## Zasady liczone automatycznie
 - **Cecha aktualna** = początkowa + rozwinięcia + modyfikator. **S** = K ÷ 10, **Wt** = Odp ÷ 10 (w dół).
 - Pole rozwinięć świeci na czerwono, gdy przekracza schemat rozwoju obecnej profesji.
