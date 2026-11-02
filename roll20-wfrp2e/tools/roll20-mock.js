@@ -323,6 +323,8 @@
   /* ---------- Start ---------- */
   window.Roll20Mock = {
     attrs,
+    /** Zmiana atrybutu tak, jakby wpisał ją gracz (wywołuje zdarzenia change:). */
+    set(name, value) { setAttr(name, value, 'player', false); },
     init({ sheetRoot, chatEl, rolltemplate, worker, preset }) {
       root = sheetRoot;
       chat = chatEl;

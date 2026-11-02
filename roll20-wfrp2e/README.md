@@ -9,7 +9,9 @@ Własne karty wymagają konta **Pro** u twórcy gry.
 1. Wejdź na stronę gry i otwórz *Settings → Game Settings*.
 2. W polu *Character Sheet Template* wybierz **Custom**.
 3. Wklej zawartość `sheet.html` do zakładki **HTML Layout**, a `sheet.css` do **CSS Styling**.
-4. Kliknij **Save Changes** i otwórz grę.
+4. **Odznacz „Legacy Sanitization”.** Karta używa trybu CSE (w `sheet.json`: `"legacy": false`).
+   W trybie legacy część efektów (np. `:is()`, `mask`, `color-mix()`) może zostać wycięta.
+5. Kliknij **Save Changes** i otwórz grę.
 
 Do szybkiego testowania zmian użyj Roll20 **Sheet Sandbox**: zmiany widać bez przeładowania gry.
 
@@ -22,6 +24,25 @@ Do szybkiego testowania zmian użyj Roll20 **Sheet Sandbox**: zmiany widać bez 
 | Magia | Magia (liczba k10), tradycja, zaklęcia z poziomem mocy, składnikiem i premią |
 | Ekwipunek | Pieniądze (zk / s / p, suma w pensach), przedmioty z obciążeniem i udźwigiem K × 10 |
 | Bohater | Opis, Punkty Doświadczenia, choroby psychiczne, notatki |
+
+## Karta reaguje na stan postaci
+Worker ustawia ukryte flagi (`stan_ran`, `stan_obled`, `zyw_proc`, `obc_proc`, `ps_flag`, `pp_flag`, `wiatr`),
+a CSS zmienia wygląd selektorem `[value="…"] ~ …`. Nie ma tu żadnego JS w DOM, bo Roll20 na to nie pozwala.
+
+| Stan | Efekt |
+|---|---|
+| Żywotność ≤ 3 (ciężko ranny) | rozbryzgi krwi w rogach, czerwona Żywotność, dopisek „ciężko ranny” |
+| Żywotność 0 | pulsująca czerwona winieta w rytmie serca, migająca kropka na zakładce Walka |
+| Punkty Obłędu 3+ / 6+ | fioletowe przebarwienia pergaminu; przy 6+ „oddychające” plamy i rozszczepione, drgające nagłówki |
+| Przeciążenie (obciążenie > K × 10) | pasek obciążenia zakuty w przesuwający się łańcuch |
+| Punkty Szczęścia | świece: tyle stoi, ile masz PP, a pali się tyle, ile zostało PS. Kliknięcie świecy zapala lub gasi |
+| Wiatr magii | kolor kręgu runicznego, poświaty i przycisków w zakładce Magia (8 kolegiów) |
+| Rasa | pieczęć lakowa w nagłówku: kolor wosku, wstęga i znak |
+
+Pozostałe ozdobniki: pergamin i ramy z samych gradientów (bez obrazków), żelazne narożniki z nitami, kości k100
+w kształcie ścianki k10, skórzane zakładki z animacją kartkowania. Szablon rzutu ma pieczęć wyniku, wstrząs
+przy Furii Ulryka i mieniący się pasek przy Przekleństwie Tzeentcha. Przy `prefers-reduced-motion` ruch jest
+wyłączony.
 
 ## Zasady liczone automatycznie
 - **Cecha aktualna** = początkowa + rozwinięcia + modyfikator. **S** = K ÷ 10, **Wt** = Odp ÷ 10 (w dół).

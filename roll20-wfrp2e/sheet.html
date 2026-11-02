@@ -2,8 +2,16 @@
 <div class="sheet-root">
   <input type="hidden" name="attr_zakladka" value="cechy" class="sheet-tabstate">
   <input type="hidden" name="attr_wersja" value="0">
+  <!-- Flagi stanu ustawiane przez worker; CSS reaguje na nie selektorem [value] + ~ -->
+  <input type="hidden" name="attr_stan_ran" value="0" class="sheet-f-ran">
+  <input type="hidden" name="attr_stan_obled" value="0" class="sheet-f-obled">
+  <input type="hidden" name="attr_wiatr" value="ogien" class="sheet-f-wiatr">
+  <div class="sheet-efekty" aria-hidden="true"><span class="sheet-ef-obled"></span><span class="sheet-ef-krew"></span></div>
+  <span class="sheet-rog sheet-rog-lg" aria-hidden="true"></span><span class="sheet-rog sheet-rog-pg" aria-hidden="true"></span><span class="sheet-rog sheet-rog-ld" aria-hidden="true"></span><span class="sheet-rog sheet-rog-pd" aria-hidden="true"></span>
 
   <header class="sheet-naglowek">
+    <input type="hidden" name="attr_rasa" value="Człowiek" class="sheet-f-rasa">
+    <div class="sheet-pieczec" aria-hidden="true"><span class="sheet-wstega"></span><span class="sheet-wosk"></span></div>
     <div class="sheet-tozsamosc">
       <label class="sheet-field sheet-f-imie"><span class="sheet-lbl">Imię</span><input type="text" name="attr_character_name" placeholder="Imię bohatera" class="sheet-imie"></label>
       <label class="sheet-field"><span class="sheet-lbl">Rasa</span><select name="attr_rasa"><option value="Człowiek" selected>Człowiek</option><option value="Elf">Elf</option><option value="Krasnolud">Krasnolud</option><option value="Niziołek">Niziołek</option></select></label>
@@ -11,8 +19,8 @@
       <label class="sheet-field"><span class="sheet-lbl">Poprzednie profesje</span><input type="text" name="attr_profesje_poprz" placeholder="np. Szczurołap"></label>
     </div>
     <div class="sheet-liczniki">
-      <div class="sheet-licznik"><span class="sheet-lbl">Żywotność</span><div class="sheet-ulamek"><input type="number" name="attr_zyw_akt" value="0" class="sheet-duzy"><span>/</span><input type="number" name="attr_zyw" value="0" class="sheet-calc sheet-maks" readonly tabindex="-1"></div></div>
-      <div class="sheet-licznik"><span class="sheet-lbl">Pkt. Szczęścia</span><div class="sheet-ulamek"><input type="number" name="attr_ps_akt" value="0" class="sheet-duzy"><span>/</span><input type="number" name="attr_pp" value="0" class="sheet-calc sheet-maks" readonly tabindex="-1"></div></div>
+      <div class="sheet-licznik sheet-zyw"><span class="sheet-lbl">Żywotność</span><div class="sheet-ulamek"><input type="number" name="attr_zyw_akt" value="0" class="sheet-duzy"><span>/</span><input type="number" name="attr_zyw" value="0" class="sheet-calc sheet-maks" readonly tabindex="-1"></div><input type="hidden" name="attr_zyw_proc" value="10" class="sheet-f-proc"><div class="sheet-pasek sheet-pasek-krew"><span></span></div></div>
+      <div class="sheet-licznik sheet-szczescie"><span class="sheet-lbl">Pkt. Szczęścia</span><input type="hidden" name="attr_ps_flag" value="0" class="sheet-f-ps"><input type="hidden" name="attr_pp_flag" value="0" class="sheet-f-pp"><div class="sheet-swiece"><button type="action" name="act_ps1" class="sheet-swieca sheet-s1" title="Zapal lub zgaś świecę 1"><span class="sheet-plomien"></span></button><button type="action" name="act_ps2" class="sheet-swieca sheet-s2" title="Zapal lub zgaś świecę 2"><span class="sheet-plomien"></span></button><button type="action" name="act_ps3" class="sheet-swieca sheet-s3" title="Zapal lub zgaś świecę 3"><span class="sheet-plomien"></span></button><button type="action" name="act_ps4" class="sheet-swieca sheet-s4" title="Zapal lub zgaś świecę 4"><span class="sheet-plomien"></span></button><button type="action" name="act_ps5" class="sheet-swieca sheet-s5" title="Zapal lub zgaś świecę 5"><span class="sheet-plomien"></span></button></div><div class="sheet-ulamek sheet-maly"><input type="number" name="attr_ps_akt" value="0"><span>/</span><input type="number" name="attr_pp" value="0" class="sheet-calc" readonly tabindex="-1"></div></div>
       <div class="sheet-licznik"><span class="sheet-lbl">Pkt. Obłędu</span><div class="sheet-ulamek"><input type="number" name="attr_po" value="0" class="sheet-calc sheet-duzy" readonly tabindex="-1"></div></div>
       <button type="roll" name="roll_inicjatywa" class="sheet-btn sheet-btn-ini" value="&{template:wfrp2e} {{name=Inicjatywa}} {{postac=@{character_name}}} {{inicjatywa=[[1d10+@{zr} &{tracker}]]}}">Inicjatywa<small>k10 + Zr</small></button>
     </div>
@@ -142,7 +150,8 @@
   <!-- ===================== MAGIA ===================== -->
   <section class="sheet-tab sheet-tab-magia">
     <div class="sheet-magia-top">
-      <div class="sheet-licznik"><span class="sheet-lbl">Magia (kości k10)</span><input type="number" name="attr_mag" value="0" class="sheet-calc sheet-duzy" readonly tabindex="-1"></div>
+      <div class="sheet-krag"><span class="sheet-krag-runy"></span><span class="sheet-lbl">Magia</span><input type="number" name="attr_mag" value="0" class="sheet-calc sheet-duzy" readonly tabindex="-1"><span class="sheet-krag-k">k10</span></div>
+      <label class="sheet-field"><span class="sheet-lbl">Wiatr magii</span><select name="attr_wiatr"><option value="ogien" selected>Aqshy · Ogień (Jasne)</option><option value="niebiosa">Azyr · Niebiosa (Niebieskie)</option><option value="metal">Chamon · Metal (Złote)</option><option value="zycie">Ghyran · Życie (Jadeitowe)</option><option value="bestie">Ghur · Bestie (Bursztynowe)</option><option value="swiatlo">Hysh · Światło (Świetliste)</option><option value="cienie">Ulgu · Cienie (Szare)</option><option value="smierc">Shyish · Śmierć (Ametystowe)</option></select></label>
       <label class="sheet-field"><span class="sheet-lbl">Tradycja / Wiedza</span><input type="text" name="attr_tradycja" placeholder="np. Tradycja Ognia"></label>
       <label class="sheet-field"><span class="sheet-lbl">Magia prosta</span><input type="text" name="attr_magia_prosta" placeholder="np. Magia prosta (tajemna)"></label>
     </div>
@@ -173,6 +182,8 @@
       <span class="sheet-lbl">Obciążenie</span>
       <input type="hidden" name="attr_przeciazony" value="0" class="sheet-flag">
       <div class="sheet-ulamek"><input type="number" name="attr_obc_suma" value="0" class="sheet-calc sheet-duzy" readonly tabindex="-1"><span>/</span><input type="number" name="attr_obc_max" value="0" class="sheet-calc sheet-maks" readonly tabindex="-1"></div>
+      <input type="hidden" name="attr_obc_proc" value="0" class="sheet-f-proc">
+      <div class="sheet-pasek sheet-pasek-mosiadz"><span></span></div>
       <span class="sheet-hint">Udźwig = K × 10</span>
     </div>
   </section>
@@ -217,7 +228,7 @@
 <!-- ===================== SZABLON RZUTU ===================== -->
 <rolltemplate class="sheet-rolltemplate-wfrp2e">
   <div class="sheet-rt">
-    <div class="sheet-rt-head">{{name}}{{#postac}}<span class="sheet-rt-who">{{postac}}</span>{{/postac}}</div>
+    <div class="sheet-rt-head"><span class="sheet-rt-tytul">{{name}}</span>{{#postac}}<span class="sheet-rt-who">{{postac}}</span>{{/postac}}</div>
     <div class="sheet-rt-body">
       {{#inicjatywa}}<div class="sheet-rt-row"><span>Inicjatywa</span><span class="sheet-rt-val">{{inicjatywa}}</span></div>{{/inicjatywa}}
       {{#rzut}}<div class="sheet-rt-row"><span>{{#czar}}Suma k10 + premia{{/czar}}{{^czar}}Rzut k100{{/czar}}</span><span class="sheet-rt-val">{{rzut}}</span></div>{{/rzut}}
@@ -267,6 +278,7 @@ const TRUDNOSC = '?{Trudność testu|Przeciętny (+0),0|Rutynowy (+10),10|Łatwy
 /* ---------- Pomocnicze ---------- */
 const liczba = (v) => { const n = parseInt(v, 10); return Number.isNaN(n) ? 0 : n; };
 const czysc = (s) => String(s || '').replace(/[{}[\]|]/g, '').replace(/\s+/g, ' ').trim();
+const zakres = (n, min, max) => Math.min(max, Math.max(min, n));
 const ze = (n) => (n >= 0 ? `+${n}` : `${n}`);
 // "repeating_bron_-abc_atak" -> "-abc" (identyfikatory wierszy mogą zawierać podkreślniki)
 const idWiersza = (ev, sekcja, przycisk) => {
@@ -280,7 +292,7 @@ const POLA_GLOWNE = [
   ...DRUGO.flatMap((c) => [`${c}_pocz`, `${c}_schemat`, `${c}_rozw`, `${c}_mod`]),
   ...Object.keys(UMIEJ).flatMap((u) => [`um_${u}_poz`, `um_${u}_mod`]),
   ...LOKACJE.map((l) => `pz_${l}`),
-  'pd_akt', 'pd_wydane', 'zk', 'szylingi', 'pensy',
+  'pd_akt', 'pd_wydane', 'zk', 'szylingi', 'pensy', 'zyw_akt', 'ps_akt',
 ];
 
 const przeliczWszystko = () => {
@@ -312,6 +324,13 @@ const przeliczWszystko = () => {
     out.pd_razem = liczba(v.pd_akt) + liczba(v.pd_wydane);
     out.pensy_razem = liczba(v.zk) * 240 + liczba(v.szylingi) * 12 + liczba(v.pensy);
     out.obc_max = Math.max(0, out.k) * 10;
+    // Stany dla efektów CSS: ciężko ranny przy Żyw ≤ 3, krytyczny przy 0; obłęd od 3 i 6 PO.
+    const zywAkt = liczba(v.zyw_akt);
+    out.zyw_proc = out.zyw > 0 ? zakres(Math.ceil((zywAkt / out.zyw) * 10), 0, 10) : 0;
+    out.stan_ran = zywAkt <= 0 ? 2 : zywAkt <= 3 ? 1 : 0;
+    out.stan_obled = out.po >= 6 ? 2 : out.po >= 3 ? 1 : 0;
+    out.ps_flag = zakres(liczba(v.ps_akt), 0, 5);
+    out.pp_flag = zakres(out.pp, 0, 5);
     setAttrs(out, { silent: true }, () => {
       przeliczUmiejZaaw();
       przeliczBron();
@@ -367,6 +386,8 @@ const przeliczEkwipunek = () => {
       });
       out.obc_suma = suma;
       out.przeciazony = suma > liczba(v.obc_max) ? 1 : 0;
+      const max = liczba(v.obc_max);
+      out.obc_proc = max > 0 ? zakres(Math.round((suma / max) * 10), 0, 10) : (suma > 0 ? 10 : 0);
       setAttrs(out, { silent: true });
     });
   });
@@ -380,6 +401,15 @@ on('change:repeating_ekw remove:repeating_ekw', przeliczEkwipunek);
 /* ---------- Zakładki ---------- */
 ['cechy', 'walka', 'magia', 'ekw', 'bohater'].forEach((z) => {
   on(`clicked:z${z}`, () => setAttrs({ zakladka: z }));
+});
+
+/* ---------- Świece Punktów Szczęścia ---------- */
+// Klik w zapaloną ostatnią świecę gasi ją, w każdą inną ustawia tyle zapalonych.
+[1, 2, 3, 4, 5].forEach((i) => {
+  on(`clicked:ps${i}`, () => getAttrs(['ps_akt'], (v) => {
+    const akt = liczba(v.ps_akt);
+    setAttrs({ ps_akt: akt === i ? i - 1 : i });
+  }));
 });
 
 /* ---------- Rzuty ---------- */

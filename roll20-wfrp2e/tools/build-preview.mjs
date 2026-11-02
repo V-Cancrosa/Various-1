@@ -16,8 +16,6 @@ const body = sheet
   .replace(/<rolltemplate[\s\S]*?<\/rolltemplate>/, '')
   .replace(/<script type="text\/worker">[\s\S]*?<\/script>/, '');
 
-// Ciemne zmienne z .sheet-darkmode -> motyw ciemny podglądu.
-const dark = css.match(/\.sheet-darkmode \.charsheet \{([\s\S]*?)\}/)[1];
 const sheetCss = css.replace(/@import url\('[^']+'\);/, '');
 const fontImport = css.match(/@import url\('([^']+)'\);/)[1];
 
@@ -88,15 +86,16 @@ const html = `<title>Karta WFRP 2e</title>
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) { --tlo: #0f1011; --tlo-czat: #141517; --tekst: #e4dfd4; --tekst-2: #a49d90; --obramowanie: #333336; --akcent: #d4564b; color-scheme: dark; }
-  :root:not([data-theme="light"]) .charsheet {${dark}}
 }
 :root[data-theme="dark"] { --tlo: #0f1011; --tlo-czat: #141517; --tekst: #e4dfd4; --tekst-2: #a49d90; --obramowanie: #333336; --akcent: #d4564b; color-scheme: dark; }
-:root[data-theme="dark"] .charsheet {${dark}}
 body { background: var(--tlo); color: var(--tekst); font-family: 'Alegreya Sans', 'Segoe UI', Helvetica, Arial, sans-serif; }
 .r20-strona { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1260px; margin: 0 auto; align-items: start; }
 .r20-pasek { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
 .r20-pasek h1 { font-family: 'Pirata One', Georgia, serif; font-weight: 400; font-size: 30px; margin: 0; color: var(--akcent); text-wrap: balance; }
 .r20-pasek p { margin: 0; color: var(--tekst-2); font-size: 13px; max-width: 70ch; }
+.r20-stany { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: var(--tekst-2); order: 3; }
+.r20-stany button { font: inherit; font-size: 12.5px; padding: 3px 10px; cursor: pointer; background: transparent; color: var(--tekst); border: 1px solid var(--obramowanie); border-radius: 999px; }
+.r20-stany button:hover, .r20-stany button:focus-visible { border-color: var(--akcent); color: var(--akcent); outline: none; }
 .r20-okno { min-width: 0; border: 1px solid var(--obramowanie); box-shadow: 0 2px 10px rgb(0 0 0 / 0.18); }
 .r20-czat { position: sticky; top: max(12px, env(safe-area-inset-top, 0px)); display: flex; flex-direction: column; border: 1px solid var(--obramowanie); background: var(--tlo-czat); height: min(78vh, 760px); min-width: 0; }
 .r20-czat h2 { margin: 0; padding: 8px 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--tekst-2); border-bottom: 1px solid var(--obramowanie); }
@@ -133,6 +132,14 @@ ${sheetCss}
 <div class="r20-strona">
   <div class="r20-pasek">
     <h1>Warhammer Fantasy 2e: karta Roll20</h1>
+    <div class="r20-stany" role="group" aria-label="Stan postaci">
+      <span>Wypróbuj stan postaci:</span>
+      <button type="button" data-stan="zdrowa">Zdrowa</button>
+      <button type="button" data-stan="ranna">Ciężko ranna</button>
+      <button type="button" data-stan="krytycznie">Krytycznie</button>
+      <button type="button" data-stan="obled">Obłęd</button>
+      <button type="button" data-stan="ciezar">Przeciążona</button>
+    </div>
     <p>Podgląd z symulacją Roll20: sheet workery, zapytania o trudność i szablon rzutu działają tak jak w grze. Kości są losowane w przeglądarce, a dane postaci to przykład. Zmień cechę, a karta przeliczy umiejętności, pancerz i ruch.</p>
   </div>
   <div class="r20-okno"><div class="charsheet" id="karta">${body}</div></div>
@@ -154,6 +161,17 @@ ${sheetCss}
 ${mock}
 </script>
 <script>
+// Tryb ciemny jak w Roll20: klasa .sheet-darkmode na body, zgodnie z motywem podglądu.
+(() => {
+  const mq = matchMedia('(prefers-color-scheme: dark)');
+  const sync = () => {
+    const t = document.documentElement.dataset.theme;
+    document.body.classList.toggle('sheet-darkmode', t === 'dark' || (!t && mq.matches));
+  };
+  mq.addEventListener('change', sync);
+  new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  sync();
+})();
 Roll20Mock.init({
   sheetRoot: document.getElementById('karta'),
   chatEl: document.getElementById('czat'),
@@ -161,6 +179,16 @@ Roll20Mock.init({
   worker: ${JSON.stringify(worker)},
   preset: ${JSON.stringify(preset)},
 });
+const STANY = {
+  zdrowa: { zyw_akt: 14, po_pocz: 2, k_pocz: 29 },
+  ranna: { zyw_akt: 3, po_pocz: 2, k_pocz: 29 },
+  krytycznie: { zyw_akt: 0, po_pocz: 2, k_pocz: 29 },
+  obled: { zyw_akt: 14, po_pocz: 7, k_pocz: 29 },
+  ciezar: { zyw_akt: 14, po_pocz: 2, k_pocz: 3 },
+};
+document.querySelectorAll('[data-stan]').forEach((b) => b.addEventListener('click', () => {
+  Object.entries(STANY[b.dataset.stan]).forEach(([k, v]) => Roll20Mock.set(k, v));
+}));
 </script>
 `;
 writeFileSync(out, html);
