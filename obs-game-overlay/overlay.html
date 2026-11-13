@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Game Overlay</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Rajdhani:wght@500;700&family=Inter:wght@400;600;800&family=Press+Start+2P&display=swap">
+<style>
+  :root {
+    --accent: #7c5cff;
+    --accent2: #00e1ff;
+    --scale: 1;
+    --margin: 40px;
+  }
+  html, body {
+    margin: 0;
+    background: transparent;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+  * { box-sizing: border-box; }
+
+  /* ---------- pozycja ---------- */
+  #stage {
+    position: absolute;
+    inset: var(--margin);
+    display: flex;
+    pointer-events: none;
+  }
+  .pos-tl #stage { align-items: flex-start; justify-content: flex-start; }
+  .pos-tc #stage { align-items: flex-start; justify-content: center; }
+  .pos-tr #stage { align-items: flex-start; justify-content: flex-end; }
+  .pos-bl #stage { align-items: flex-end;   justify-content: flex-start; }
+  .pos-bc #stage { align-items: flex-end;   justify-content: center; }
+  .pos-br #stage { align-items: flex-end;   justify-content: flex-end; }
+
+  #card {
+    --dir: -1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    transform-origin: left center;
+    opacity: 0;
+    transform: translateX(calc(var(--dir) * 60px)) scale(calc(var(--scale) * .96));
+    transition: opacity .45s ease, transform .55s cubic-bezier(.2,.9,.25,1.2);
+    max-width: min(760px, calc(100vw - 2 * var(--margin)));
+  }
+  .pos-tr #card, .pos-br #card { --dir: 1; transform-origin: right center; }
+  .pos-tc #card, .pos-bc #card { --dir: 0; transform-origin: center; }
+  #card.show { opacity: 1; transform: translateX(0) scale(var(--scale)); }
+
+  #icon {
+    flex: none;
+    width: 84px; height: 84px;
+    display: grid; place-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+  #icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #mono { font-weight: 800; font-size: 32px; letter-spacing: .02em; }
+  #text { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  #label { text-transform: uppercase; letter-spacing: .22em; font-size: 13px; opacity: .85; display: flex; align-items: center; gap: 8px; }
+  #label .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 1.6s infinite; }
+  #name { font-size: 38px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #card.long #name { font-size: 30px; }
+  #card.xlong #name { font-size: 24px; }
+  #meta { display: flex; gap: 12px; align-items: center; font-size: 16px; opacity: .9; min-width: 0; }
+  #sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  #timer { flex: none; font-variant-numeric: tabular-nums; }
+  #timer:empty, #sub:empty { display: none; }
+  #src { display: none; }
+
+  @keyframes pulse { 50% { opacity: .35; } }
+  @keyframes sweep { from { background-position: 0% 50%; } to { background-position: 200% 50%; } }
+  @keyframes scan { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
+
+  /* ---------- motyw: NEON ---------- */
+  .theme-neon #card {
+    font-family: 'Rajdhani', system-ui, sans-serif;
+    color: #fff;
+    padding: 16px 28px 16px 16px;
+    background: linear-gradient(120deg, rgba(10,8,25,.88), rgba(20,10,40,.78));
+    border-radius: 14px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 55%, transparent), inset 0 0 18px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  .theme-neon #card::before {
+    content: ""; position: absolute; inset: -2px; border-radius: 16px; padding: 2px; z-index: -1;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+    background-size: 200% 100%;
+    animation: sweep 4s linear infinite;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+  .theme-neon #icon { border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 0 16px var(--accent); }
+  .theme-neon #mono { font-family: 'Orbitron', sans-serif; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.4); }
+  .theme-neon #name { font-family: 'Orbitron', sans-serif; font-weight: 800; text-shadow: 0 0 12px var(--accent), 0 0 2px #fff; letter-spacing: .02em; }
+  .theme-neon #label { color: var(--accent2); font-weight: 700; }
+  .theme-neon #timer { color: var(--accent2); font-weight: 700; }
+
+  /* ---------- motyw: GLASS ---------- */
+  .theme-glass #card {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #fff;
+    padding: 14px 26px 14px 14px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.08));
+    backdrop-filter: blur(14px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,.35);
+    box-shadow: 0 10px 40px rgba(0,0,0,.35), 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .theme-glass #icon { border-radius: 16px; background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+  .theme-glass #mono { color: #fff; }
+  .theme-glass #name { font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,.4); }
+  .theme-glass #label { font-weight: 600; font-size: 12px; }
+  .theme-glass #meta { font-size: 15px; }
+  .theme-glass #timer { background: rgba(0,0,0,.3); padding: 2px 10px; border-radius: 999px; }
+
+  /* ---------- motyw: MINIMAL ---------- */
+  .theme-minimal #card {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #fff;
+    gap: 14px;
+    padding: 6px 0 6px 18px;
+    border-left: 5px solid var(--accent);
+    text-shadow: 0 2px 8px rgba(0,0,0,.85), 0 0 2px rgba(0,0,0,.9);
+  }
+  .theme-minimal #icon { width: 64px; height: 64px; border-radius: 8px; background: var(--accent); box-shadow: 0 4px 14px rgba(0,0,0,.5); }
+  .theme-minimal #mono { color: #fff; font-size: 24px; }
+  .theme-minimal #name { font-weight: 800; font-size: 34px; }
+  .theme-minimal #label { font-size: 11px; font-weight: 600; color: var(--accent); }
+  .theme-minimal #label .dot { display: none; }
+
+  /* ---------- motyw: RETRO (pixel) ---------- */
+  .theme-retro #card {
+    font-family: 'Press Start 2P', monospace;
+    color: #fff;
+    padding: 16px 22px 16px 16px;
+    background: #111;
+    border: 4px solid #fff;
+    box-shadow: 6px 6px 0 var(--accent), 12px 12px 0 rgba(0,0,0,.6);
+    image-rendering: pixelated;
+    overflow: hidden;
+  }
+  .theme-retro #card::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 2px, transparent 2px 4px);
+  }
+  .theme-retro #icon { width: 72px; height: 72px; border: 4px solid var(--accent); background: #222; }
+  .theme-retro #mono { color: var(--accent); font-size: 22px; font-weight: 400; }
+  .theme-retro #name { font-size: 22px; line-height: 1.4; color: var(--accent); }
+  .theme-retro #card.long #name { font-size: 17px; }
+  .theme-retro #card.xlong #name { font-size: 13px; }
+  .theme-retro #label { font-size: 9px; letter-spacing: .1em; color: #ffd84a; }
+  .theme-retro #label .dot { border-radius: 0; background: #ffd84a; box-shadow: none; animation: pulse 1s steps(2) infinite; }
+  .theme-retro #meta { font-size: 10px; line-height: 1.6; }
+
+  /* ---------- motyw: ESPORT (pasek) ---------- */
+  .theme-esport #card {
+    font-family: 'Rajdhani', system-ui, sans-serif;
+    color: #fff;
+    gap: 0;
+    padding: 0;
+    background: rgba(12,12,16,.92);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 100%, 0 100%);
+    padding-right: 44px;
+  }
+  .theme-esport #icon { width: 92px; height: 92px; background: var(--accent); clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%); }
+  .theme-esport #mono { font-family: 'Orbitron', sans-serif; color: #fff; }
+  .theme-esport #text { padding: 8px 0 8px 18px; }
+  .theme-esport #label { background: var(--accent); color: #fff; align-self: flex-start; padding: 1px 10px; font-weight: 700; font-size: 12px; }
+  .theme-esport #label .dot { background: #fff; box-shadow: none; }
+  .theme-esport #name { font-weight: 700; font-size: 40px; text-transform: uppercase; letter-spacing: .03em; }
+  .theme-esport #timer { color: var(--accent); font-weight: 700; }
+  .theme-esport #card::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2)); background-size: 200% 100%; animation: sweep 3s linear infinite;
+  }
+
+  /* bez ikony */
+  .no-icon #icon { display: none; }
+  .no-label #label { display: none; }
+</style>
+</head>
+<body class="theme-neon pos-bl">
+<div id="stage">
+  <div id="card">
+    <div id="icon"><span id="mono"></span></div>
+    <div id="text">
+      <div id="label"><span class="dot"></span><span id="labelText">Teraz gram</span></div>
+      <div id="name"></div>
+      <div id="meta"><span id="sub"></span><span id="timer"></span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const KEY = 'obsGameOverlay.v1';
+  const DETECTED_KEY = 'obsGameOverlay.detected';
+
+  const DEFAULTS = {
+    game: '', subtitle: '', cover: '', since: 0,
+    label: 'Teraz gram', theme: 'neon', position: 'bl',
+    accent: '', accent2: '', mode: 'auto', discordId: '', ignore: '',
+    timer: true, icon: true, showLabel: true, visible: true, scale: 1, margin: 40
+  };
+
+  // ---- ustawienia z URL (działa bez panelu) ----
+  const p = new URLSearchParams(location.search);
+  const bool = v => !(v === '0' || v === 'false' || v === 'no');
+  const fromUrl = {};
+  const map = {
+    game: 'game', sub: 'subtitle', cover: 'cover', label: 'label', theme: 'theme', pos: 'position',
+    accent: 'accent', accent2: 'accent2', mode: 'mode', discord: 'discordId', ignore: 'ignore'
+  };
+  for (const [k, v] of Object.entries(map)) if (p.has(k)) fromUrl[v] = p.get(k);
+  if (p.has('timer')) fromUrl.timer = bool(p.get('timer'));
+  if (p.has('icon')) fromUrl.icon = bool(p.get('icon'));
+  if (p.has('showLabel')) fromUrl.showLabel = bool(p.get('showLabel'));
+  if (p.has('scale')) fromUrl.scale = parseFloat(p.get('scale')) || 1;
+  if (p.has('margin')) fromUrl.margin = parseInt(p.get('margin'), 10) || 0;
+  if (fromUrl.accent && /^[0-9a-f]{3,8}$/i.test(fromUrl.accent)) fromUrl.accent = '#' + fromUrl.accent;
+  if (fromUrl.accent2 && /^[0-9a-f]{3,8}$/i.test(fromUrl.accent2)) fromUrl.accent2 = '#' + fromUrl.accent2;
+  const usePanel = !(p.get('panel') === '0');
+
+  const readStore = () => {
+    if (!usePanel) return null;
+    try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; }
+  };
+
+  let settings = { ...DEFAULTS, ...fromUrl, ...(readStore() || {}) };
+  if (!settings.since) settings.since = Date.now();
+
+  // ---- DOM ----
+  const $ = id => document.getElementById(id);
+  const card = $('card'), icon = $('icon'), mono = $('mono'), nameEl = $('name'),
+        subEl = $('sub'), timerEl = $('timer'), labelText = $('labelText');
+
+  // ---- kolory z nazwy gry ----
+  function hash(str) {
+    let h = 2166136261;
+    for (const c of str) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function autoAccents(name) {
+    const h = hash(name.toLowerCase()) % 360;
+    return [`hsl(${h} 90% 60%)`, `hsl(${(h + 45) % 360} 95% 60%)`];
+  }
+  function monogram(name) {
+    const words = name.replace(/[^\p{L}\p{N}\s:]/gu, '').split(/[\s:]+/).filter(Boolean);
+    if (!words.length) return '?';
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+
+  // ---- Discord (Lanyard) ----
+  let discordGame = null;
+  let ws = null, hb = null, wsId = '', retry = null;
+
+  function assetUrl(a) {
+    const img = a.assets && a.assets.large_image;
+    if (img) {
+      if (img.startsWith('mp:')) return 'https://media.discordapp.net/' + img.slice(3);
+      if (/^\d+$/.test(img) && a.application_id) return `https://cdn.discordapp.com/app-assets/${a.application_id}/${img}.png`;
+    }
+    if (a.application_id) return `https://dcdn.dstn.to/app-icons/${a.application_id}?size=256`;
+    return '';
+  }
+
+  function onPresence(d) {
+    const acts = (d && d.activities) || [];
+    const a = acts.find(x => x.type === 0);
+    discordGame = a ? {
+      name: a.name,
+      sub: [a.details, a.state].filter(Boolean).join(' · '),
+      start: a.timestamps && a.timestamps.start ? a.timestamps.start : 0,
+      image: assetUrl(a),
+      source: 'discord'
+    } : null;
+    try { localStorage.setItem(DETECTED_KEY, JSON.stringify({ game: discordGame, at: Date.now(), status: d && d.discord_status })); } catch {}
+    render();
+  }
+
+  function disconnect() {
+    clearInterval(hb); clearTimeout(retry);
+    if (ws) { ws.onclose = null; try { ws.close(); } catch {} }
+    ws = null; wsId = '';
+  }
+
+  function connect(id) {
+    disconnect();
+    if (!id || settings.mode === 'manual') { discordGame = null; return; }
+    wsId = id;
+    ws = new WebSocket('wss://api.lanyard.rest/socket');
+    ws.onmessage = e => {
+      let m; try { m = JSON.parse(e.data); } catch { return; }
+      if (m.op === 1) {
+        hb = setInterval(() => ws && ws.readyState === 1 && ws.send(JSON.stringify({ op: 3 })), m.d.heartbeat_interval);
+        ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: id } }));
+      } else if (m.op === 0 && (m.t === 'INIT_STATE' || m.t === 'PRESENCE_UPDATE')) {
+        onPresence(m.d);
+      }
+    };
+    ws.onclose = () => {
+      clearInterval(hb);
+      retry = setTimeout(() => connect(id), 5000);
+    };
+  }
+
+  // ---- co pokazać ----
+  function ignored(name) {
+    return settings.ignore.split(',').map(s => s.trim().toLowerCase()).filter(Boolean).includes(name.toLowerCase());
+  }
+  function current() {
+    const manual = settings.game.trim()
+      ? { name: settings.game.trim(), sub: settings.subtitle, start: settings.since, image: settings.cover, source: 'manual' }
+      : null;
+    let d = discordGame && !ignored(discordGame.name) ? { ...discordGame } : null;
+    if (d) {
+      // ręczny podtytuł / okładka wygrywają, jeśli nazwa się zgadza albo podtytuł z Discorda jest pusty
+      const same = manual && manual.name.toLowerCase() === d.name.toLowerCase();
+      if (same && manual.image) d.image = manual.image;
+      if (same && manual.sub) d.sub = manual.sub;
+      if (!d.sub && settings.subtitle && settings.mode === 'discord') d.sub = settings.subtitle;
+    }
+    if (settings.mode === 'manual') return manual;
+    if (settings.mode === 'discord') return d;
+    return d || manual; // auto
+  }
+
+  // ---- render ----
+  let shownKey = null, swapTimer = null;
+
+  function applyStyle(g) {
+    document.body.className = `theme-${settings.theme} pos-${settings.position}` +
+      (settings.icon ? '' : ' no-icon') + (settings.showLabel ? '' : ' no-label');
+    const [a1, a2] = autoAccents(g ? g.name : 'game');
+    const root = document.documentElement.style;
+    root.setProperty('--accent', settings.accent || a1);
+    root.setProperty('--accent2', settings.accent2 || a2);
+    root.setProperty('--scale', settings.scale);
+    root.setProperty('--margin', settings.margin + 'px');
+    labelText.textContent = settings.label;
+  }
+
+  function fill(g) {
+    nameEl.textContent = g.name;
+    subEl.textContent = g.sub || '';
+    card.classList.toggle('long', g.name.length > 22);
+    card.classList.toggle('xlong', g.name.length > 34);
+    card.dataset.start = g.start || 0;
+    mono.textContent = monogram(g.name);
+    const old = icon.querySelector('img');
+    if (old) old.remove();
+    mono.style.display = '';
+    if (g.image) {
+      const img = new Image();
+      img.alt = '';
+      img.onload = () => { mono.style.display = 'none'; };
+      img.onerror = () => { img.remove(); mono.style.display = ''; };
+      img.src = g.image;
+      icon.appendChild(img);
+    }
+    tick();
+  }
+
+  function render() {
+    const g = settings.visible ? current() : null;
+    applyStyle(g);
+    const key = g ? `${g.name}|${g.image}` : null;
+    clearTimeout(swapTimer);
+    if (!g) { card.classList.remove('show'); shownKey = null; return; }
+    if (key === shownKey) { fill(g); card.classList.add('show'); return; }
+    if (shownKey && card.classList.contains('show')) {
+      card.classList.remove('show');
+      swapTimer = setTimeout(() => { fill(g); shownKey = key; requestAnimationFrame(() => card.classList.add('show')); }, 480);
+    } else {
+      fill(g); shownKey = key;
+      requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('show')));
+    }
+  }
+
+  function fmt(ms) {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, sec = s % 60;
+    const pad = n => String(n).padStart(2, '0');
+    return h ? `${h}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
+  }
+  function tick() {
+    const start = +card.dataset.start;
+    timerEl.textContent = settings.timer && start ? fmt(Date.now() - start) : '';
+  }
+  setInterval(tick, 1000);
+
+  // ---- synchronizacja z panelem ----
+  function reload() {
+    const prevId = settings.discordId, prevMode = settings.mode;
+    settings = { ...DEFAULTS, ...fromUrl, ...(readStore() || {}) };
+    if (!settings.since) settings.since = Date.now();
+    if (settings.discordId !== prevId || (settings.mode === 'manual') !== (prevMode === 'manual')) connect(settings.discordId);
+    render();
+  }
+  window.addEventListener('storage', e => { if (e.key === KEY) reload(); });
+  try {
+    const bc = new BroadcastChannel('obsGameOverlay');
+    bc.onmessage = () => reload();
+  } catch {}
+
+  connect(settings.discordId);
+  render();
+})();
+</script>
+</body>
+</html>

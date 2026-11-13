@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>Game Overlay – panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #1b1d23; --panel: #23262e; --line: #343844; --text: #e7e9ee; --muted: #9aa0ad;
+    --accent: #7c5cff; --ok: #3ddc84; --warn: #ffb347;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 13px/1.4 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+  main { padding: 10px; display: flex; flex-direction: column; gap: 10px; max-width: 720px; margin: 0 auto; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  h2 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+  label { display: flex; flex-direction: column; gap: 3px; color: var(--muted); font-size: 12px; }
+  .row { display: flex; gap: 8px; align-items: end; }
+  .row > * { flex: 1; min-width: 0; }
+  .row > .auto { flex: none; }
+  input[type=text], input[type=url], select {
+    width: 100%; background: #14161b; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 7px 9px; font: inherit;
+  }
+  input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  #game { font-size: 16px; font-weight: 600; }
+  button {
+    background: #2e323d; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 7px 12px; font: inherit; cursor: pointer; white-space: nowrap;
+  }
+  button:hover { background: #383d4a; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.primary:hover { filter: brightness(1.1); }
+  .check { flex-direction: row; align-items: center; gap: 6px; color: var(--text); cursor: pointer; }
+  .checks { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { background: #14161b; border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px 4px 10px; display: inline-flex; gap: 4px; align-items: center; cursor: pointer; font-size: 12px; }
+  .chip:hover { border-color: var(--accent); }
+  .chip .x { border: 0; background: none; padding: 0 4px; color: var(--muted); font-size: 14px; line-height: 1; }
+  .chip .x:hover { color: #fff; background: none; }
+  .status { font-size: 12px; color: var(--muted); }
+  .status b { color: var(--text); }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .pill.on { background: color-mix(in srgb, var(--ok) 20%, transparent); color: var(--ok); }
+  .pill.off { background: #2e323d; color: var(--muted); }
+  .preview {
+    position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; border: 1px solid var(--line);
+    background-color: #2a2d35;
+    background-image: linear-gradient(45deg, #31343d 25%, transparent 25%, transparent 75%, #31343d 75%), linear-gradient(45deg, #31343d 25%, transparent 25%, transparent 75%, #31343d 75%);
+    background-size: 20px 20px; background-position: 0 0, 10px 10px;
+  }
+  .preview iframe { position: absolute; top: 0; left: 0; width: 1920px; height: 1080px; border: 0; transform-origin: 0 0; pointer-events: none; }
+  .hint { font-size: 11px; color: var(--muted); margin: 0; }
+  .hint a { color: #a99bff; }
+  textarea { width: 100%; background: #14161b; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 7px; font: 11px/1.4 ui-monospace, monospace; resize: vertical; }
+  input[type=color] { width: 40px; height: 32px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  details summary { cursor: pointer; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .12em; }
+  details[open] summary { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h2>Gra <span id="visPill" class="pill on">WIDOCZNA</span></h2>
+    <div class="row">
+      <input id="game" type="text" list="historyList" placeholder="Wpisz nazwę gry i Enter…" autocomplete="off">
+      <button class="primary auto" id="setBtn">Ustaw</button>
+    </div>
+    <datalist id="historyList"></datalist>
+    <div class="row">
+      <label>Podtytuł (opcjonalnie)
+        <input id="subtitle" type="text" placeholder="np. Rozdział 3 / Ranked / Hardcore">
+      </label>
+    </div>
+    <label>Okładka / ikona – URL obrazka (opcjonalnie)
+      <input id="cover" type="url" placeholder="https://…/cover.jpg">
+    </label>
+    <div class="row">
+      <button id="toggleBtn">Ukryj nakładkę</button>
+      <button id="timerBtn">Zeruj licznik</button>
+      <button id="clearBtn">Wyczyść grę</button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <section>
+    <h2>Discord – automatyczne wykrywanie <span id="dcPill" class="pill off">WYŁ.</span></h2>
+    <div class="row">
+      <label>Źródło gry
+        <select id="mode">
+          <option value="auto">Auto: Discord, a jak nic nie gra – ręcznie</option>
+          <option value="manual">Tylko ręcznie</option>
+          <option value="discord">Tylko Discord</option>
+        </select>
+      </label>
+    </div>
+    <label>Twoje Discord User ID
+      <input id="discordId" type="text" inputmode="numeric" placeholder="np. 123456789012345678">
+    </label>
+    <label>Ignoruj (po przecinku)
+      <input id="ignore" type="text" placeholder="np. Visual Studio Code, Wallpaper Engine">
+    </label>
+    <div class="status" id="dcStatus">Discord nie jest skonfigurowany.</div>
+    <p class="hint">Wymaga dołączenia do serwera <a href="https://discord.gg/lanyard" target="_blank">Lanyard</a> (jednorazowo) i włączonego w Discordzie „Wyświetlaj aktualną aktywność”. Szczegóły w README.</p>
+  </section>
+
+  <section>
+    <h2>Wygląd</h2>
+    <div class="row">
+      <label>Motyw
+        <select id="theme">
+          <option value="neon">Neon</option>
+          <option value="glass">Glass</option>
+          <option value="minimal">Minimal</option>
+          <option value="retro">Retro pixel</option>
+          <option value="esport">E-sport</option>
+        </select>
+      </label>
+      <label>Pozycja
+        <select id="position">
+          <option value="tl">Lewy górny</option>
+          <option value="tc">Góra środek</option>
+          <option value="tr">Prawy górny</option>
+          <option value="bl">Lewy dolny</option>
+          <option value="bc">Dół środek</option>
+          <option value="br">Prawy dolny</option>
+        </select>
+      </label>
+    </div>
+    <div class="row">
+      <label>Napis nad nazwą
+        <input id="label" type="text" placeholder="Teraz gram">
+      </label>
+      <label class="auto">Kolor
+        <input id="accent" type="color" value="#7c5cff">
+      </label>
+      <label class="check auto" style="padding-bottom:7px"><input id="autoColor" type="checkbox" checked> auto</label>
+    </div>
+    <div class="row">
+      <label>Skala <span id="scaleVal"></span>
+        <input id="scale" type="range" min="0.5" max="2" step="0.05">
+      </label>
+      <label>Margines <span id="marginVal"></span>
+        <input id="margin" type="range" min="0" max="200" step="5">
+      </label>
+    </div>
+    <div class="checks">
+      <label class="check"><input id="timer" type="checkbox"> licznik czasu</label>
+      <label class="check"><input id="icon" type="checkbox"> ikona</label>
+      <label class="check"><input id="showLabel" type="checkbox"> napis</label>
+    </div>
+  </section>
+
+  <section>
+    <h2>Podgląd (1920×1080)</h2>
+    <div class="preview" id="preview"><iframe id="frame" title="podgląd"></iframe></div>
+  </section>
+
+  <section>
+    <details>
+      <summary>Link bez panelu (statyczny)</summary>
+      <p class="hint">Gotowy URL z obecnymi ustawieniami – możesz wkleić go jako źródło przeglądarki, jeśli nie chcesz używać panelu.</p>
+      <textarea id="staticUrl" rows="4" readonly></textarea>
+      <div class="row" style="margin-top:6px"><button id="copyBtn" class="auto">Kopiuj</button></div>
+    </details>
+  </section>
+</main>
+
+<script>
+(() => {
+  const KEY = 'obsGameOverlay.v1';
+  const DETECTED_KEY = 'obsGameOverlay.detected';
+  const HISTORY_KEY = 'obsGameOverlay.history';
+  const DEFAULTS = {
+    game: '', subtitle: '', cover: '', since: 0,
+    label: 'Teraz gram', theme: 'neon', position: 'bl',
+    accent: '', accent2: '', mode: 'auto', discordId: '', ignore: '',
+    timer: true, icon: true, showLabel: true, visible: true, scale: 1, margin: 40
+  };
+  const $ = id => document.getElementById(id);
+  const load = (k, fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch { return fb; } };
+  let s = { ...DEFAULTS, ...load(KEY, {}) };
+  let history = load(HISTORY_KEY, []);
+  let bc = null; try { bc = new BroadcastChannel('obsGameOverlay'); } catch {}
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {}
+    if (bc) bc.postMessage('update');
+    syncUi();
+  }
+
+  // --- historia gier ---
+  function remember(g) {
+    if (!g) return;
+    const entry = { game: g, subtitle: s.subtitle, cover: s.cover };
+    history = [entry, ...history.filter(h => h.game.toLowerCase() !== g.toLowerCase())].slice(0, 16);
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch {}
+    renderHistory();
+  }
+  function renderHistory() {
+    $('historyList').innerHTML = '';
+    $('chips').innerHTML = '';
+    history.forEach((h, i) => {
+      const o = document.createElement('option'); o.value = h.game; $('historyList').appendChild(o);
+      const c = document.createElement('span'); c.className = 'chip'; c.title = 'Ustaw: ' + h.game;
+      c.textContent = h.game;
+      const x = document.createElement('button'); x.className = 'x'; x.textContent = '×'; x.title = 'Usuń z historii';
+      x.onclick = e => { e.stopPropagation(); history.splice(i, 1); localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); renderHistory(); };
+      c.appendChild(x);
+      c.onclick = () => { $('game').value = h.game; $('subtitle').value = h.subtitle || ''; $('cover').value = h.cover || ''; setGame(); };
+      $('chips').appendChild(c);
+    });
+  }
+
+  // --- akcje ---
+  function setGame() {
+    const g = $('game').value.trim();
+    if (g !== s.game) s.since = Date.now();
+    s.game = g;
+    s.subtitle = $('subtitle').value.trim();
+    s.cover = $('cover').value.trim();
+    s.visible = true;
+    remember(g);
+    save();
+  }
+  $('setBtn').onclick = setGame;
+  $('game').addEventListener('keydown', e => { if (e.key === 'Enter') setGame(); });
+  $('subtitle').addEventListener('keydown', e => { if (e.key === 'Enter') setGame(); });
+  $('cover').addEventListener('keydown', e => { if (e.key === 'Enter') setGame(); });
+  $('toggleBtn').onclick = () => { s.visible = !s.visible; save(); };
+  $('timerBtn').onclick = () => { s.since = Date.now(); save(); };
+  $('clearBtn').onclick = () => { s.game = ''; s.subtitle = ''; s.cover = ''; $('game').value = ''; $('subtitle').value = ''; $('cover').value = ''; save(); };
+
+  // pola ustawień zapisywane od razu
+  const textFields = ['label', 'discordId', 'ignore'];
+  textFields.forEach(id => $(id).addEventListener('change', () => { s[id] = $(id).value.trim(); save(); }));
+  ['mode', 'theme', 'position'].forEach(id => $(id).addEventListener('change', () => { s[id] = $(id).value; save(); }));
+  ['timer', 'icon', 'showLabel'].forEach(id => $(id).addEventListener('change', () => { s[id] = $(id).checked; save(); }));
+  $('scale').addEventListener('input', () => { s.scale = +$('scale').value; save(); });
+  $('margin').addEventListener('input', () => { s.margin = +$('margin').value; save(); });
+  $('accent').addEventListener('input', () => { s.accent = $('accent').value; $('autoColor').checked = false; save(); });
+  $('autoColor').addEventListener('change', () => { s.accent = $('autoColor').checked ? '' : $('accent').value; save(); });
+
+  function syncUi() {
+    if (document.activeElement !== $('game') && !$('game').value) $('game').value = s.game;
+    for (const id of ['label', 'discordId', 'ignore']) if (document.activeElement !== $(id)) $(id).value = s[id];
+    $('mode').value = s.mode; $('theme').value = s.theme; $('position').value = s.position;
+    $('timer').checked = s.timer; $('icon').checked = s.icon; $('showLabel').checked = s.showLabel;
+    $('scale').value = s.scale; $('scaleVal').textContent = Math.round(s.scale * 100) + '%';
+    $('margin').value = s.margin; $('marginVal').textContent = s.margin + ' px';
+    $('autoColor').checked = !s.accent; if (s.accent) $('accent').value = s.accent;
+    $('visPill').textContent = s.visible ? 'WIDOCZNA' : 'UKRYTA';
+    $('visPill').className = 'pill ' + (s.visible ? 'on' : 'off');
+    $('toggleBtn').textContent = s.visible ? 'Ukryj nakładkę' : 'Pokaż nakładkę';
+    renderDetected();
+    renderStaticUrl();
+  }
+
+  // --- status Discorda (zapisywany przez nakładkę w podglądzie) ---
+  function renderDetected() {
+    const on = s.discordId && s.mode !== 'manual';
+    $('dcPill').textContent = on ? 'WŁ.' : 'WYŁ.';
+    $('dcPill').className = 'pill ' + (on ? 'on' : 'off');
+    if (!on) { $('dcStatus').textContent = s.mode === 'manual' ? 'Tryb ręczny – Discord pominięty.' : 'Podaj Discord User ID, żeby włączyć wykrywanie.'; return; }
+    const d = load(DETECTED_KEY, null);
+    if (!d) { $('dcStatus').textContent = 'Łączenie z Lanyard…'; return; }
+    const st = d.status ? ` (status: ${d.status})` : '';
+    $('dcStatus').innerHTML = '';
+    const b = document.createElement('b');
+    if (d.game) { $('dcStatus').append('Discord wykrył: '); b.textContent = d.game.name; $('dcStatus').append(b, st); }
+    else { $('dcStatus').append('Discord: brak gry w tej chwili' + st); }
+  }
+  window.addEventListener('storage', e => {
+    if (e.key === DETECTED_KEY) renderDetected();
+    if (e.key === KEY) { s = { ...DEFAULTS, ...load(KEY, {}) }; syncUi(); }
+  });
+
+  // --- statyczny URL ---
+  function overlayUrl() { return new URL('overlay.html', location.href); }
+  function renderStaticUrl() {
+    const u = overlayUrl();
+    const q = u.searchParams;
+    q.set('panel', '0');
+    if (s.game) q.set('game', s.game);
+    if (s.subtitle) q.set('sub', s.subtitle);
+    if (s.cover) q.set('cover', s.cover);
+    if (s.discordId) q.set('discord', s.discordId);
+    if (s.mode !== 'auto') q.set('mode', s.mode);
+    if (s.ignore) q.set('ignore', s.ignore);
+    q.set('theme', s.theme); q.set('pos', s.position);
+    if (s.label !== DEFAULTS.label) q.set('label', s.label);
+    if (s.accent) q.set('accent', s.accent.replace('#', ''));
+    if (s.scale !== 1) q.set('scale', s.scale);
+    if (s.margin !== 40) q.set('margin', s.margin);
+    if (!s.timer) q.set('timer', '0');
+    if (!s.icon) q.set('icon', '0');
+    if (!s.showLabel) q.set('showLabel', '0');
+    $('staticUrl').value = u.href;
+  }
+  $('copyBtn').onclick = async () => {
+    $('staticUrl').select();
+    try { await navigator.clipboard.writeText($('staticUrl').value); } catch { document.execCommand('copy'); }
+    $('copyBtn').textContent = 'Skopiowano ✓'; setTimeout(() => $('copyBtn').textContent = 'Kopiuj', 1500);
+  };
+
+  // --- podgląd ---
+  const frame = $('frame');
+  frame.src = overlayUrl().href;
+  const fit = () => { frame.style.transform = `scale(${$('preview').clientWidth / 1920})`; };
+  new ResizeObserver(fit).observe($('preview'));
+
+  if (!s.since) s.since = Date.now();
+  $('game').value = s.game; $('subtitle').value = s.subtitle; $('cover').value = s.cover;
+  renderHistory();
+  syncUi();
+})();
+</script>
+</body>
+</html>
